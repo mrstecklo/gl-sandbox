@@ -1,7 +1,6 @@
 #include <iostream>
 
-// Include GLEW
-#include <GL/glew.h>
+#include "GLObject.h"
 
 // Include GLFW
 #include <GLFW/glfw3.h>
