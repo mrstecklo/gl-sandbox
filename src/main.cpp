@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "GLObject.h"
+#include "GLVertexArray.h"
 
 // Include GLFW
 #include <GLFW/glfw3.h>
@@ -47,6 +47,9 @@ int main(int argc, const char* argv[])
 
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
+	GL::VertexArray arr;
+	arr.Bind();
 
 	do{
 		// Clear the screen. It's not mentioned before Tutorial 02, but it can cause flickering, so it's there nonetheless.

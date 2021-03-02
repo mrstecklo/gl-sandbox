@@ -10,6 +10,7 @@ add_executable(GLApp
    main.cpp
 
    GL/GLObject.cpp
+   GL/GLVertexArray.cpp
 )
 
 target_include_directories(GLApp PUBLIC
