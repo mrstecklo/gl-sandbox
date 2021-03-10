@@ -11,7 +11,7 @@ Object<T>::~Object()
 template<class T>
 void Object<T>::Reset()
 {
-    static_assert(std::is_base_of<Object<T>, T>::value, "Usage: class Texture : public Object<Texture>");
+    static_assert(std::is_base_of<Object<T>, T>::value, "Usage: class Shader : public Object<Shader>");
     if(IsValid()) {
         T::Destroy(Get());
         Release();
@@ -42,6 +42,7 @@ ObjectArray<T>::ObjectArray() :
 template<class T>
 void ObjectArray<T>::Destroy(const GLuint& value)
 {
+    static_assert(std::is_base_of<ObjectArray<T>, T>::value, "Usage: class Texture : public ObjectArray<Texture>");
     T::DestroyArray(1, &value);
 }
 

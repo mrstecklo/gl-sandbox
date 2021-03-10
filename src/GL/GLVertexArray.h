@@ -1,3 +1,5 @@
+#pragma once
+
 #include "GLObject.h"
 
 namespace GL {

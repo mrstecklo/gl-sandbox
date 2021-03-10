@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(GLEW_INCLUDE_DIR CACHE PATH "Path to the GL/glew.h")
 set(GLFW_INCLUDE_DIR CACHE PATH "Path to the GLFW/glfw3.h")
+set(GLM_INCLUDE_DIR CACHE PATH "Path to the glm/glm.hpp")
 
 set(GLEW_LIB_DIR CACHE PATH "Path to the glew32s.lib")
 set(GLFW_LIB_DIR CACHE PATH "Path to the glfw3.lib")
@@ -9,6 +10,8 @@ set(GLFW_LIB_DIR CACHE PATH "Path to the glfw3.lib")
 add_executable(GLApp
    main.cpp
 
+   GL/GLDebug.cpp
+   GL/GLFWScope.cpp
    GL/GLObject.cpp
    GL/GLVertexArray.cpp
 )
@@ -21,6 +24,7 @@ target_include_directories(GLApp PUBLIC
 target_include_directories(GLApp SYSTEM PUBLIC
    ${GLEW_INCLUDE_DIR}
    ${GLFW_INCLUDE_DIR}
+   ${GLM_INCLUDE_DIR}
 )
 
 add_definitions(
