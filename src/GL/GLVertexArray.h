@@ -11,11 +11,10 @@ public:
     using Base::Bind;
     using Base::BindDefault;
 
-
 private:
-    static void DestroyArray(GLsizei n, const GLuint* handles);
-    static void CreateArray(GLsizei n, GLuint* handles);
-    static void BindImpl(GLuint handle);
+    static void DestroyArray(GLsizei n, const GLuint* handles)  { glDeleteVertexArrays(n, handles); }
+    static void CreateArray(GLsizei n, GLuint* handles)         { glGenVertexArrays(n, handles); }
+    static void BindImpl(GLuint handle)                         { glBindVertexArray(handle); }
 };
 
 } // namespace GL

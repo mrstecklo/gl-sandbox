@@ -12,8 +12,6 @@ add_executable(GLApp
 
    GL/GLDebug.cpp
    GL/GLFWScope.cpp
-   GL/GLObject.cpp
-   GL/GLVertexArray.cpp
 )
 
 target_include_directories(GLApp PUBLIC

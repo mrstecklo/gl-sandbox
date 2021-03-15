@@ -9,19 +9,19 @@ namespace GL {
 
 class ObjectBase : private Util::Noncopyable {
 public:
-    bool IsValid() const { return handle != 0; }
+    constexpr bool IsValid() const { return handle != 0; }
 
 protected:
-    explicit ObjectBase(GLuint value) : handle(value) {}
-    explicit ObjectBase(std::nullptr_t) : handle(0) {}
+    constexpr explicit ObjectBase(GLuint value) : handle(value) {}
+    constexpr explicit ObjectBase(std::nullptr_t) : handle(0) {}
 
-    ObjectBase(ObjectBase&& other);
-    ObjectBase& operator=(ObjectBase&& other);
+    ObjectBase(ObjectBase&& other) : handle(other.Release()) {}
+    ObjectBase& operator=(ObjectBase&& other)  { std::swap(handle, other.handle); return *this; }
 
-    const GLuint& Get() const { return handle; }
-          GLuint& Access()    { return handle; }
+    constexpr const GLuint& Get() const { return handle; }
+                    GLuint& Access()    { return handle; }
           
-    GLuint Release();
+    GLuint Release() { return std::exchange(handle, 0); }
 
 private:
     GLuint handle;
@@ -37,8 +37,8 @@ public:
     void Reset();
 
 protected:
-    explicit Object(GLuint value) : ObjectBase(value) {}
-    explicit Object(std::nullptr_t p) : ObjectBase(p) {}
+    constexpr explicit Object(GLuint value) : ObjectBase(value) {}
+    constexpr explicit Object(std::nullptr_t p) : ObjectBase(p) {}
 
     Object(Object&& other) = default;
     Object& operator=(Object&& other) = default;
@@ -69,8 +69,8 @@ public:
     static Container Create(GLsizei n);
 
 protected:
-    explicit ObjectArray(GLuint value) : Obj(value) {}
-    explicit ObjectArray(std::nullptr_t p) : Obj(p) {}
+    constexpr explicit ObjectArray(GLuint value) : Obj(value) {}
+    constexpr explicit ObjectArray(std::nullptr_t p) : Obj(p) {}
     ObjectArray();
 
     ObjectArray(ObjectArray&& other) = default;

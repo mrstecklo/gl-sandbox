@@ -1,8 +1,6 @@
 #include <iostream>
 
-#include "GLVertexArray.h"
-#include "GLBuffer.h"
-#include "GLDebug.h"
+#include "GLCPP.h"
 #include "GLFWScope.h"
 GLFWwindow* window;
 
@@ -68,7 +66,7 @@ int main( void )
 
 		GL::ArrayBuffer vertexBuffer;
 		vertexBuffer.Bind();
-		GL::ArrayBuffer::Data(sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+		GL::ArrayBuffer::Data(g_vertex_buffer_data, GL::STATIC_DRAW);
 
 		do{
 
@@ -79,7 +77,8 @@ int main( void )
 			//glUseProgram(programID);
 
 			// 1rst attribute buffer : vertices
-			glEnableVertexAttribArray(0);
+			GL::VertexAttribArray vertices(0);
+
 			vertexBuffer.Bind();
 			glVertexAttribPointer(
 				0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -92,8 +91,6 @@ int main( void )
 
 			// Draw the triangle !
 			glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
-
-			//glDisableVertexAttribArray(0);
 
 			// Swap buffers
 			glfwSwapBuffers(window);

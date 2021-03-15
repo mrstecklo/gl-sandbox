@@ -12,7 +12,7 @@ Scope::Scope()
         throw std::exception("GL::FWScope instance already exist");
     }
     
-    instantiated = glfwInit();
+    instantiated = (glfwInit() != GL_FALSE);
 
     if(!instantiated) {
 		throw std::exception("Failed to initialize GLFW");
