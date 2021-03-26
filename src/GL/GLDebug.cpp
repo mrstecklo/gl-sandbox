@@ -1,28 +1,9 @@
 #include "GLDebug.h"
 
-namespace GL {
-namespace Debug {
+using namespace GL::Debug;
 
-void Enable()
+const char* ToString(Severity s)
 {
-    glEnable(GL_DEBUG_OUTPUT);
-}
-
-void Disable()
-{
-    glDisable(GL_DEBUG_OUTPUT);
-}
-
-void RegisterCallback(Callback cb, void* userParam)
-{
-    glDebugMessageCallback(reinterpret_cast<GLDEBUGPROC>(cb), userParam);
-}
-
-} // namespace Debug
-
-const char* ToString(Debug::Severity s)
-{
-    using namespace Debug;
     switch(s) {
     case Severity::HIGH:
         return "High";
@@ -37,9 +18,8 @@ const char* ToString(Debug::Severity s)
     }
 }
 
-const char* ToString(Debug::Type t)
+const char* ToString(Type t)
 {
-    using namespace Debug;
     switch(t) {
     case Type::ERROR:
         return "Error";
@@ -64,9 +44,8 @@ const char* ToString(Debug::Type t)
     }
 }
 
-const char* ToString(Debug::Source s)
+const char* ToString(Source s)
 {
-    using namespace Debug;
     switch(s) {
     case Source::API:
         return "API";
@@ -84,5 +63,3 @@ const char* ToString(Debug::Source s)
         return "Invalid";
     }
 }
-
-} // namespace GL

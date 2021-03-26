@@ -30,6 +30,7 @@ private:
 // GL object prototype
 // T must derive from Object<T>
 // T must provide static void Destroy(GLuint) function (e.g. glDeleteProgram() or a wrapper of glDeleteTextures())
+// Everything could be implemented via virtual functions. But this way we keep minimal size and performance overhead
 template<class T>
 class Object : public ObjectBase {
 public:
@@ -77,10 +78,10 @@ protected:
     ObjectArray& operator=(ObjectArray&& other) = default;
 
     void Bind();
-    void Bind(GLenum target);
+    //void Bind(GLenum target);
 
     static void BindDefault();
-    static void BindDefault(GLenum target);
+    //static void BindDefault(GLenum target);
 
 private:
     static void Destroy(const GLuint& value);

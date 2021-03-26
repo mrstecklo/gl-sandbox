@@ -11,6 +11,10 @@ public:
     using Base::Bind;
     using Base::BindDefault;
 
+    VertexArray() = default;
+    constexpr explicit VertexArray(std::nullptr_t p) :
+        Base(p) {}
+
 private:
     static void DestroyArray(GLsizei n, const GLuint* handles)  { glDeleteVertexArrays(n, handles); }
     static void CreateArray(GLsizei n, GLuint* handles)         { glGenVertexArrays(n, handles); }

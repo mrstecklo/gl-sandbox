@@ -52,11 +52,11 @@ void ObjectArray<T>::Bind()
     T::BindImpl(Get());
 }
 
-template<class T>
+/*template<class T>
 void ObjectArray<T>::Bind(GLenum target)
 {
      T::BindImpl(target, Get());
-}
+}*/
 
 template<class T>
 void ObjectArray<T>::BindDefault()
@@ -64,10 +64,10 @@ void ObjectArray<T>::BindDefault()
     T::BindImpl(0);
 }
 
-template<class T>
+/*template<class T>
 void ObjectArray<T>::BindDefault(GLenum target)
 {
     T::BindImpl(target, 0);
-}
+}*/
 
 } // namespace GL

@@ -42,14 +42,14 @@ typedef void (GLAPIENTRY *Callback) (
     const GLchar*,  // message
     const void*);   // userParam
 
-void Enable();
-void Disable();
-void RegisterCallback(Callback cb, void* userParam);
+inline void Enable()  { glEnable(GL_DEBUG_OUTPUT); }
+inline void Disable() { glDisable(GL_DEBUG_OUTPUT); }
+inline void RegisterCallback(Callback cb, void* userParam) { glDebugMessageCallback(reinterpret_cast<GLDEBUGPROC>(cb), userParam); }
 
 } // namespace Debug
-
-const char* ToString(Debug::Severity s);
-const char* ToString(Debug::Type t);
-const char* ToString(Debug::Source s);
-
 } // namespace GL
+
+const char* ToString(GL::Debug::Severity s);
+const char* ToString(GL::Debug::Type t);
+const char* ToString(GL::Debug::Source s);
+

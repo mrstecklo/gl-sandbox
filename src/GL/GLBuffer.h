@@ -26,6 +26,10 @@ public:
 
     static constexpr GLenum target = Target::value;
 
+    Buffer() = default;
+    constexpr explicit Buffer(std::nullptr_t p) :
+        Base(p) {}
+
     static void Data(GLsizeiptr size, const GLvoid* data, BufferUsage usage)    { glBufferData(target, size, data, usage); }
     template<class T, std::size_t N>
     static void Data(const T (& data)[N], BufferUsage usage)                    { Data(sizeof(data), data, usage); }

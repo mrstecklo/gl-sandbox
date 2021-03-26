@@ -1,5 +1,7 @@
 #include <iostream>
 
+
+
 #include "GLCPP.h"
 #include "GLFWScope.h"
 GLFWwindow* window;
@@ -16,9 +18,34 @@ void GLAPIENTRY MessageCallback (
     const GLchar* message,
     const void* userParam)
 {
-	std::cout << GL::ToString(type) << ": " << GL::ToString(severity) << ": " << GL::ToString(source) << std::endl
+	std::cout << ToString(type) << ": " << ToString(severity) << ": " << ToString(source) << std::endl
 		<< message << std::endl;
 }
+
+const GLchar vertexShader[] =
+"#version 330 core\n"
+"layout(location = 0) in vec3 vertexPosition_modelspace;"
+"layout(location = 1) in vec2 vertexUV;"
+"out vec2 UV;"
+"uniform mat4 MVP = {"
+"{1.f, 0.f, 0.f, 0.f},"
+"{0.f, 1.f, 0.f, 0.f},"
+"{0.f, 0.f, 1.f, 0.f},"
+"{0.f, 0.f, 0.f, 1.f}};"
+"void main(){"
+" gl_Position =  MVP * vec4(vertexPosition_modelspace,1);"
+" UV = vertexUV;"
+"}";
+
+const GLchar fragmentShader[] = 
+"#version 330 core\n"
+"in vec2 UV;"
+"out vec3 color;"
+"uniform sampler2D myTextureSampler;"
+"void main() {"
+"color = vec3(1, 0, 0);"
+"}";
+
 
 int main( void )
 {
@@ -58,15 +85,25 @@ int main( void )
 		GL::VertexArray arr;
 		arr.Bind();
 
-		const GLfloat g_vertex_buffer_data[] = { 
-			-1.0f, -1.0f, 0.0f,
-			1.0f, -1.0f, 0.0f,
-			0.0f,  1.0f, 0.0f,
+		static constexpr GLint vertexSize = 3;
+		static constexpr GLsizei numVertices = 6;
+
+		const GLfloat g_vertex_buffer_data[numVertices][vertexSize] = { 
+			{-1.0f, -1.0f, 0.0f},
+			{0.0f,  0.0f, 0.0f},
+			{0.0f,  1.0f, 0.0f},
+			{1.0f, -1.0f, 0.0f},
+			{0.0f,  0.0f, 0.0f},
+			{0.0f,  1.0f, 0.0f},
 		};
 
 		GL::ArrayBuffer vertexBuffer;
 		vertexBuffer.Bind();
 		GL::ArrayBuffer::Data(g_vertex_buffer_data, GL::STATIC_DRAW);
+
+		auto prog = GL::Program::Create(vertexShader, nullptr, fragmentShader);
+
+		static const auto attrVertices = GL::VertexAttrib(0);
 
 		do{
 
@@ -74,23 +111,22 @@ int main( void )
 			glClear( GL_COLOR_BUFFER_BIT );
 
 			// Use our shader
-			//glUseProgram(programID);
+			prog.Use();
 
 			// 1rst attribute buffer : vertices
-			GL::VertexAttribArray vertices(0);
+			GL::VertexAttribArray vertices(attrVertices);
 
 			vertexBuffer.Bind();
-			glVertexAttribPointer(
-				0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-				3,                  // size
-				GL_FLOAT,           // type
-				GL_FALSE,           // normalized?
-				0,                  // stride
-				(void*)0            // array buffer offset
+			GL::VertexAttribPointer(
+				attrVertices,
+				vertexSize,          // size
+				GL::FLOAT,           // type
+				0,                   // stride
+				nullptr              // array buffer offset
 			);
 
 			// Draw the triangle !
-			glDrawArrays(GL_TRIANGLES, 0, 3); // 3 indices starting at 0 -> 1 triangle
+			glDrawArrays(GL_TRIANGLES, 0, numVertices); // 3 indices starting at 0 -> 1 triangle
 
 			// Swap buffers
 			glfwSwapBuffers(window);
@@ -100,14 +136,12 @@ int main( void )
 		while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 			glfwWindowShouldClose(window) == 0 );
 
-		//glDeleteProgram(programID);
-
 		return 0;
 	} catch (const std::exception& e) {
-		std::cout << e.what() << std::endl;
+		std::cout << "Exception: " << e.what() << std::endl;
 		return -1;
 	} catch (...) {
-		std::cout << "unknown exception" << std::endl;
+		std::cout << "Unknown exception" << std::endl;
 		return -2;
 	}
 }
