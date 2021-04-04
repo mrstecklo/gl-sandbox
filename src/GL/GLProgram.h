@@ -1,8 +1,12 @@
 #pragma once
 
 #include "GLObject.h"
+#include "GLUniform.h"
+#include <string>
 
 namespace GL {
+
+enum UniformLocation : GLint;
 
 class Shader;
 
@@ -25,6 +29,8 @@ public:
     void Detach(const Shader& s);
 
     void Link() { glLinkProgram(Get()); }
+
+    Uniform GetUniformLocation(const GLchar* name) { return Uniform(glGetUniformLocation(Get(), name)); }
 
     std::string GetInfoLog() const;
     GLboolean GetLinkStatus() const;

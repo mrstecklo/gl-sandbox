@@ -1,13 +1,15 @@
-#include <iostream>
+
 
 
 
 #include "GLCPP.h"
 #include "GLFWScope.h"
-GLFWwindow* window;
 
+
+#include <iostream>
 // Include GLM
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 void GLAPIENTRY MessageCallback (
     GL::Debug::Source source,
@@ -46,10 +48,14 @@ const GLchar fragmentShader[] =
 "color = vec3(1, 0, 0);"
 "}";
 
+static constexpr int width = 1024;
+static constexpr int height = 768;
+
 
 int main( void )
 {
 	try {
+		GLFWwindow* window = nullptr;
 		std::cout << "Hello world!" << std::endl;
 		// Initialise GLFW
 		GLFW::Scope glfw;
@@ -61,16 +67,16 @@ int main( void )
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// Open a window and create its OpenGL context
-		window = glfwCreateWindow( 1024, 768, "GL Sandbox", NULL, NULL);
+		window = glfwCreateWindow( width, height, "GL Sandbox", NULL, NULL);
 		if( window == NULL ){
-			throw std::exception("Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.");
+			throw std::runtime_error("Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.");
 		}
 		glfwMakeContextCurrent(window);
 
 		// Initialize GLEW
 		glewExperimental = true; // Needed for core profile
 		if (glewInit() != GLEW_OK) {
-			 throw std::exception("Failed to initialize GLEW");
+			 throw std::runtime_error("Failed to initialize GLEW");
 		}
 
 		// Ensure we can capture the escape key being pressed below
@@ -80,7 +86,7 @@ int main( void )
 		GL::Debug::RegisterCallback(MessageCallback, 0);
 
 		// Dark blue background
-		glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+		GL::ClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 		GL::VertexArray arr;
 		arr.Bind();
@@ -102,17 +108,41 @@ int main( void )
 		GL::ArrayBuffer::Data(g_vertex_buffer_data, GL::STATIC_DRAW);
 
 		auto prog = GL::Program::Create(vertexShader, nullptr, fragmentShader);
+		GL::UniformMatrix4f MatrixID(prog.GetUniformLocation("MVP"));
+
+
+		
 
 		static const auto attrVertices = GL::VertexAttrib(0);
+
+		// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+		glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) width / (float)height, 0.1f, 100.0f);
+		
+		// Or, for an ortho camera :
+		//glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
+		
+		// Camera matrix
+		glm::mat4 View = glm::lookAt(
+			glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
+			glm::vec3(0,0,0), // and looks at the origin
+			glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+			);
+		
+		// Model matrix : an identity matrix (model will be at the origin)
+		glm::mat4 Model = glm::mat4(1.0f);
+		// Our ModelViewProjection : multiplication of our 3 matrices
+		glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
+
+		
 
 		do{
 
 			// Clear the screen
-			glClear( GL_COLOR_BUFFER_BIT );
+			GL::Clear( GL::COLOR_BUFFER_BIT );
 
 			// Use our shader
 			prog.Use();
-
+			MatrixID.Set(&mvp[0][0]);
 			// 1rst attribute buffer : vertices
 			GL::VertexAttribArray vertices(attrVertices);
 
@@ -126,7 +156,7 @@ int main( void )
 			);
 
 			// Draw the triangle !
-			glDrawArrays(GL_TRIANGLES, 0, numVertices); // 3 indices starting at 0 -> 1 triangle
+			GL::DrawArrays(GL::TRIANGLES, numVertices); // 3 indices starting at 0 -> 1 triangle
 
 			// Swap buffers
 			glfwSwapBuffers(window);

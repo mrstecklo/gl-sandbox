@@ -4,7 +4,7 @@ namespace Util {
 
 class Noncopyable {
 public:
-    Noncopyable() = default;
+    constexpr Noncopyable() = default;
 
 private:
     Noncopyable(const Noncopyable&) = delete;
@@ -13,7 +13,7 @@ private:
 
 class Nonmovable : private Noncopyable {
 public:
-    Nonmovable() = default;
+    constexpr Nonmovable() = default;
 
 private:
     Nonmovable(Nonmovable&&) = delete;

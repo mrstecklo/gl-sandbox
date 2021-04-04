@@ -1,6 +1,6 @@
 #include "GLFWScope.h"
 #include <GLFW/glfw3.h>
-#include <exception>
+#include <stdexcept>
 
 namespace GLFW {
 
@@ -9,13 +9,13 @@ bool Scope::instantiated = false;
 Scope::Scope()
 {
     if(instantiated) {
-        throw std::exception("GL::FWScope instance already exist");
+        throw std::runtime_error("GL::FWScope instance already exist");
     }
     
     instantiated = (glfwInit() != GL_FALSE);
 
     if(!instantiated) {
-		throw std::exception("Failed to initialize GLFW");
+		throw std::runtime_error("Failed to initialize GLFW");
 	}
 }
 
