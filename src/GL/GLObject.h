@@ -54,9 +54,7 @@ private:
 // T must derive from ObjectArray<T>
 // T must provide static void DestroyArray(GLsizei, const GLuint*) function (e.g. glDeleteTextures())
 // T must provide static void CreateArray(GLsizei, GLuint*) function (e.g. glGenTextures())
-// T must provide either 
-//      static void BindImpl(GLuint handle) (e.g glBindVertexArray or wrapper of glBindTexture)
-// or   static void BindImpl(GLenum target, GLuint handle) (e.g glBindTexture)
+// T must provide static void BindImpl(GLuint handle) (e.g glBindVertexArray or wrapper of glBindTexture)
 template<class T>
 class ObjectArray : public Object<ObjectArray<T> > {
 public:
@@ -69,6 +67,9 @@ public:
 
     static Container Create(GLsizei n);
 
+    void Bind();
+    static void BindDefault();
+
 protected:
     constexpr explicit ObjectArray(GLuint value) : Obj(value) {}
     constexpr explicit ObjectArray(std::nullptr_t p) : Obj(p) {}
@@ -76,12 +77,6 @@ protected:
 
     ObjectArray(ObjectArray&& other) = default;
     ObjectArray& operator=(ObjectArray&& other) = default;
-
-    void Bind();
-    //void Bind(GLenum target);
-
-    static void BindDefault();
-    //static void BindDefault(GLenum target);
 
 private:
     static void Destroy(const GLuint& value);

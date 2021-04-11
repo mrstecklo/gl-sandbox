@@ -4,7 +4,22 @@
 
 namespace GL {
 
-void ClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) { glClearColor(red, green, blue, alpha); }
+enum Comparsion : GLenum {
+    NEVER = GL_NEVER,
+    LESS = GL_LESS,
+    EQUAL = GL_EQUAL,
+    LEQUAL = GL_LEQUAL,
+    GREATER = GL_GREATER,
+    NOTEQUAL = GL_NOTEQUAL,
+    GEQUAL = GL_GEQUAL,
+    ALWAYS = GL_ALWAYS
+};
+
+inline void EnableDepthTest() { glEnable(GL_DEPTH_TEST); }
+inline void DisableDepthTest() { glDisable(GL_DEPTH_TEST); }
+inline void DepthFunc(Comparsion func) { glDepthFunc(func); }
+
+inline void ClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha) { glClearColor(red, green, blue, alpha); }
 
 enum ClearMask : GLbitfield {
     COLOR_BUFFER_BIT = GL_COLOR_BUFFER_BIT,

@@ -21,8 +21,6 @@ class Buffer : public ObjectArray<Buffer<Target> > {
 public:
     typedef ObjectArray<Buffer<Target> > Base; 
     friend Base;
-    using Base::Bind;
-    using Base::BindDefault;
 
     static constexpr GLenum target = Target::value;
 

@@ -52,7 +52,7 @@ inline void VertexAttribPointer(
     GLsizei  	    stride,
     const GLvoid*  	pointer)
 {
-    glVertexAttribPointer(index, size, type, GL_FALSE, stride, pointer);
+    glVertexAttribPointer(index, size, type.Get(), GL_FALSE, stride, pointer);
 }
 
 inline void VertexAttribPointer(
@@ -62,7 +62,7 @@ inline void VertexAttribPointer(
     GLsizei  	    stride,
     const GLvoid*  	pointer)
 {
-    glVertexAttribPointer(index, size, type, GL_FALSE, stride, pointer);
+    glVertexAttribPointer(index, size, type.Get(), GL_FALSE, stride, pointer);
 }
 
 inline void VertexAttribIPointer(
