@@ -38,26 +38,28 @@ public:
     friend Base;
 
     static constexpr auto target = Target::value;
+    template<class T>
+    using Proxy = TextureTarget::ProxyTarget<T::value>;
 
     Texture() = default;
     constexpr explicit Texture(std::nullptr_t p) :
         Base(p) {}
 
     template<class T>
-    static void Image(GLint level, Format internalFormat, GLsizei width, GLsizei height, const T* data)
+    static void Image2D(GLint level, Format internalFormat, GLsizei width, GLsizei height, const T* data)
         { TexImage2D(TextureTarget::TwoD(target), level, internalFormat, width, height, data); }
 
     template<class T>
-    static void Image(Format internalFormat, GLsizei width, GLsizei height, const T* data)
-        { TexImage2D(TextureTarget::Rectangle(target)., internalFormat, width, height, data); }
+    static void Image2D(Format internalFormat, GLsizei width, GLsizei height, const T* data)
+        { TexImage2D(TextureTarget::Rectangle(target), internalFormat, width, height, data); }
 
     template<class T>
-    static void ProxyImage(GLint level, Format internalFormat, GLsizei width, GLsizei height)
-        { TexImage2D<T>(TextureTarget::TwoD(ProxyTarget<Target::value>::value), level, internalFormat, width, height, nullptr); }
+    static void ProxyImage2D(GLint level, Format internalFormat, GLsizei width, GLsizei height)
+        { TexImage2D<T>(TextureTarget::TwoD(Proxy<Target>::value), level, internalFormat, width, height, nullptr); }
 
     template<class T>
-    static void ProxyImage(Format internalFormat, GLsizei width, GLsizei height)
-        { TexImage2D<T>(TextureTarget::Rectangle(ProxyTarget<Target::value>::value), internalFormat, width, height, nullptr); }
+    static void ProxyImage2D(Format internalFormat, GLsizei width, GLsizei height)
+        { TexImage2D<T>(TextureTarget::Rectangle(Proxy<Target>::value), internalFormat, width, height, nullptr); }
 
     static void SetMinFilter(TextureMinFilter f) { SetParameter(GL_TEXTURE_MIN_FILTER, f.Get()); }
     static void SetMagFilter(TextureMagFilter f) { SetParameter(GL_TEXTURE_MAG_FILTER, f.Get()); }

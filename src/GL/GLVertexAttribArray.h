@@ -58,7 +58,7 @@ inline void VertexAttribPointer(
 inline void VertexAttribPointer(
     VertexAttrib    index,
     GLint  	        size,
-    BitFieldType  	type,
+    VertexAttribPackedType type,
     GLsizei  	    stride,
     const GLvoid*  	pointer)
 {

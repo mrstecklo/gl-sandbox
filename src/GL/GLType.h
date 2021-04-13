@@ -35,14 +35,17 @@ enum PackedPixelType : GLenum {
     UNSIGNED_INT_10_10_10_2 = GL_UNSIGNED_INT_10_10_10_2
 };
 
-enum ReversePackedPixelType : GLenum {
+enum ReversePackedPixelTypeBase : GLenum {
     UNSIGNED_BYTE_2_3_3_REV = GL_UNSIGNED_BYTE_2_3_3_REV,
     UNSIGNED_SHORT_5_6_5_REV = GL_UNSIGNED_SHORT_5_6_5_REV,
     UNSIGNED_SHORT_4_4_4_4_REV = GL_UNSIGNED_SHORT_4_4_4_4_REV,
     UNSIGNED_SHORT_1_5_5_5_REV = GL_UNSIGNED_SHORT_1_5_5_5_REV,
     UNSIGNED_INT_8_8_8_8_REV = GL_UNSIGNED_INT_8_8_8_8_REV,
-    UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV
+    
 };
+
+enum UI2101010RevPixelType : GLenum { UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV };
+enum I2101010RevPixelType  : GLenum { INT_2_10_10_10_REV = GL_INT_2_10_10_10_REV };
 
 class PixelTypeBase {
 public:
@@ -51,6 +54,16 @@ protected:
     constexpr PixelTypeBase(GLenum v) : value(v) {}
 private:
     GLenum value;
+};
+
+class ReversePackedPixelType : public PixelTypeBase {
+    constexpr ReversePackedPixelType(ReversePackedPixelTypeBase v) : PixelTypeBase(v) {}
+    constexpr ReversePackedPixelType(UI2101010RevPixelType v) : PixelTypeBase(v) {}
+};
+
+class VertexAttribPackedType : public PixelTypeBase {
+    constexpr VertexAttribPackedType(UI2101010RevPixelType v) : PixelTypeBase(v) {}
+    constexpr VertexAttribPackedType(I2101010RevPixelType v) : PixelTypeBase(v) {}
 };
 
 class FundamentalType : public PixelTypeBase {
@@ -66,15 +79,12 @@ public:
     constexpr FloatingType(DoubleFloatingType v) : PixelTypeBase(v) {}
 };
 
-class BitFieldType : public PixelTypeBase {
-    constexpr BitFieldType(PackedPixelType v)           : PixelTypeBase(v) {}
-    constexpr BitFieldType(ReversePackedPixelType v)    : PixelTypeBase(v) {}
-};
 
 class PixelType : public PixelTypeBase {
 public:
-    constexpr PixelType(FundamentalType v) : PixelTypeBase(v.Get()) {}
-    constexpr PixelType(BitFieldType v) : PixelTypeBase(v.Get()) {}
+    constexpr PixelType(FundamentalType v) : PixelTypeBase(v) {}
+    constexpr PixelType(PackedPixelType v) : PixelTypeBase(v) {}
+    constexpr PixelType(ReversePackedPixelType v) : PixelTypeBase(v) {}
 };
 
 template<class T>

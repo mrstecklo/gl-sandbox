@@ -10,12 +10,15 @@ set(GLFW_LIB_DIR CACHE PATH "Path to the glfw3.lib")
 add_executable(GLApp
    main.cpp
 
+   Image/Image.cpp
+
    GL/GLDebug.cpp
    GL/GLFWScope.cpp
 )
 
 target_include_directories(GLApp PUBLIC
    GL
+   Image
    Util
 )
 
