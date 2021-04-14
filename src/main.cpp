@@ -183,9 +183,14 @@ int main( void )
 		UVBuffer.Bind();
 		GL::ArrayBuffer::Data(g_uv_buffer_data, GL::STATIC_DRAW);
 
-		GL::Texture2D texture = Image::LoadBMP("uvtemplate.bmp");
-		GL::Texture2D::SetMinFilter(GL::LINEAR);
+		uint32_t mipmapCount = 0;
+		GL::Texture2D texture = Image::LoadDDS("uvtemplate.dds", &mipmapCount);
+		GL::Texture2D::SetMinFilter(GL::LINEAR_MIPMAP_LINEAR);
 		GL::Texture2D::SetMagFilter(GL::LINEAR);
+		if(mipmapCount  == 1) {
+			std::cout << "DDS file has no mipmaps" << std::endl;
+			GL::Texture2D::GenerateMipmap();
+		}
 
 		auto prog = GL::Program::Create(vertexShader, nullptr, fragmentShader);
 		GL::UniformMatrix4f MatrixID(prog.GetUniformLocation("MVP"));

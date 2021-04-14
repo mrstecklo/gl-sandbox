@@ -33,6 +33,12 @@ enum RGTCFormat : GLint {
     COMPRESSED_SIGNED_RG_RGTC2 = GL_COMPRESSED_SIGNED_RG_RGTC2
 };
 
+enum S3TCFormat : GLint {
+    COMPRESSED_RGBA_S3TC_DXT1_EXT = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+    COMPRESSED_RGBA_S3TC_DXT3_EXT = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+    COMPRESSED_RGBA_S3TC_DXT5_EXT = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
+};
+
 enum PackedFloatFormat : GLint {
     R11F_G11F_B10F = GL_R11F_G11F_B10F
 };
@@ -111,12 +117,17 @@ private:
     GLint value;
 };
 
+class CompressedFormat : public FormatBase {
+public:
+    CompressedFormat(RGTCFormat v)      : FormatBase(v) {}
+    CompressedFormat(S3TCFormat v)      : FormatBase(v) {}
+};
+
 class Format : public FormatBase {
 public:
     Format(FloatFormat v)               : FormatBase(v) {}
     Format(DepthStencilFormat v)        : FormatBase(v) {}
     Format(DepthStencilFloatFormat v)   : FormatBase(v) {}
-    Format(RGTCFormat v)                : FormatBase(v) {}
     Format(PackedFloatFormat v)         : FormatBase(v) {}
     Format(SharedExponentFormat v)      : FormatBase(v) {}
     Format(UnsignedIntegerFormat v)     : FormatBase(v) {}
@@ -126,6 +137,8 @@ public:
     Format(PackedUnsignedFormat v)      : FormatBase(v) {}
     Format(PackedNormalizedFormat v)    : FormatBase(v) {}
     Format(sRGBFormat v)                : FormatBase(v) {}
+
+    Format(CompressedFormat v)          : FormatBase(v) {}
 };
 
 } // namespace GL

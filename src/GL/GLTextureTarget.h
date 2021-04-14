@@ -47,15 +47,21 @@ private:
     GLenum value;
 };
 
+class Mipmapable : public Base{
+public:
+    constexpr Mipmapable(TextureTargetT1D v)   : Base(v) {}
+    constexpr Mipmapable(TextureTargetT2D v)   : Base(v) {}
+    constexpr Mipmapable(TextureTargetT3D v)   : Base(v) {}
+    constexpr Mipmapable(TextureTargetT1DA v)  : Base(v) {}
+    constexpr Mipmapable(TextureTargetT2DA v)  : Base(v) {}
+    constexpr Mipmapable(TextureTargetTCM v)   : Base(v) {}
+};
+
 class Bindable : public Base{
 public:
-    constexpr Bindable(TextureTargetT1D v)   : Base(v) {}
-    constexpr Bindable(TextureTargetT2D v)   : Base(v) {}
-    constexpr Bindable(TextureTargetT3D v)   : Base(v) {}
-    constexpr Bindable(TextureTargetT1DA v)  : Base(v) {}
-    constexpr Bindable(TextureTargetT2DA v)  : Base(v) {}
+    constexpr Bindable(Mipmapable v)         : Base(v) {}
+
     constexpr Bindable(TextureTargetTR v)    : Base(v) {}
-    constexpr Bindable(TextureTargetTCM v)   : Base(v) {}
     constexpr Bindable(TextureTargetTB v)    : Base(v) {}
     constexpr Bindable(TextureTargetT2DM v)  : Base(v) {}
     constexpr Bindable(TextureTargetT2DMA v) : Base(v) {}
