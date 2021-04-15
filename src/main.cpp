@@ -35,9 +35,13 @@ const GLchar vertexShader[] =
 "{0.f, 1.f, 0.f, 0.f},"
 "{0.f, 0.f, 1.f, 0.f},"
 "{0.f, 0.f, 0.f, 1.f}};"
+"uniform mat3x2 UVMat = {"
+"{1.f, 0.f},"
+"{0.f, 1.f},"
+"{0.f, 0.f}};"
 "void main(){"
 " gl_Position =  MVP * vec4(vertexPosition_modelspace,1);"
-" UV = vertexUV;"
+" UV = UVMat * vec3(vertexUV, 1);"
 "}";
 
 const GLchar fragmentShader[] = 
@@ -183,17 +187,29 @@ int main( void )
 		UVBuffer.Bind();
 		GL::ArrayBuffer::Data(g_uv_buffer_data, GL::STATIC_DRAW);
 
-		uint32_t mipmapCount = 0;
-		GL::Texture2D texture = Image::LoadDDS("uvtemplate.dds", &mipmapCount);
+		uint32_t mipmapCount = 1;
+		bool invertV = false;
+		GL::Texture2D texture = Image::Load("cube", &mipmapCount, &invertV);
 		GL::Texture2D::SetMinFilter(GL::LINEAR_MIPMAP_LINEAR);
 		GL::Texture2D::SetMagFilter(GL::LINEAR);
-		if(mipmapCount  == 1) {
-			std::cout << "DDS file has no mipmaps" << std::endl;
+		if(mipmapCount == 1) {
+			std::cout << "Texture file has no mipmaps" << std::endl;
 			GL::Texture2D::GenerateMipmap();
 		}
 
 		auto prog = GL::Program::Create(vertexShader, nullptr, fragmentShader);
 		GL::UniformMatrix4f MatrixID(prog.GetUniformLocation("MVP"));
+
+		if(invertV) {
+			GL::UniformMatrix3x2f UVMat(prog.GetUniformLocation("UVMat"));
+			static const float ivertedUVMat[3][2] = {
+				{1.f,  0.f},
+				{0.f, -1.f},
+				{0.f,  1.f}
+			};
+			prog.Use();
+			UVMat.Set(ivertedUVMat);
+		}
 
 
 		static constexpr auto attrVertices = GL::VertexAttrib(0);

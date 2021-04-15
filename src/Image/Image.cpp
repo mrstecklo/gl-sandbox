@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
+#include <cctype>
 
 namespace Image {
 
@@ -164,10 +165,6 @@ GL::Texture2D LoadDDS(const char* path, uint32_t* mipmapCount)
         throw std::runtime_error(ss.str());
     }
 
-    if(mipmapCount) {
-        *mipmapCount = header.fields.mipmapCount;
-    }
-
     if(strncmp(header.fields.signature, "DDS ", 4) != 0) {
         std::stringstream ss;
         ss << __func__ << '(' << path << ')' << std::endl
@@ -243,8 +240,73 @@ GL::Texture2D LoadDDS(const char* path, uint32_t* mipmapCount)
         header.fields.width  /= 2;
         header.fields.height /= 2;
     }
+    
+    if(mipmapCount) {
+        *mipmapCount = header.fields.mipmapCount;
+    }
 
     return result;
+}
+
+static GL::Texture2D LoadBMP(const std::string& s, uint32_t* mipmapCount, bool* invertV)
+{
+    if(mipmapCount) {
+        *mipmapCount = 1;
+    }
+    if(invertV) {
+        *invertV = false;
+    }
+
+    return LoadBMP(s.data());
+}
+
+static GL::Texture2D LoadDDS(const std::string& s, uint32_t* mipmapCount, bool* invertV)
+{
+    if(invertV) {
+        *invertV = true;
+    }
+
+    return LoadDDS(s.data(), mipmapCount);
+}
+
+struct ExtentionLoad {
+    const char* extention;
+    GL::Texture2D (*func) (const std::string& s, uint32_t* mipmapCount, bool* invertV);
+};
+
+static const ExtentionLoad loaders[] =
+{
+    {"dds", LoadDDS},
+    {"bmp", LoadBMP}
+};
+
+GL::Texture2D Load(const std::string& s, uint32_t* mipmapCount, bool* invertV)
+{
+    auto idx = s.find_last_of('.');
+    if(idx != std::string::npos) {
+        auto ext = s.substr(idx + 1);
+        for(auto& ch : ext) {
+            ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+        }
+
+        for(auto& l : loaders) {
+            if(ext.compare(l.extention) == 0) {
+                return l.func(s, mipmapCount, invertV);
+            }
+        }
+    }
+
+    std::stringstream ss;
+
+    for(auto& l : loaders) {
+        try {
+            return l.func(s, mipmapCount, invertV);
+        } catch (const std::exception& e) {
+            ss << std::endl << e.what();
+        }
+    }
+
+    throw std::runtime_error(ss.str());
 }
 
 } // namespace Image

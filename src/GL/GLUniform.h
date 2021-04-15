@@ -40,6 +40,22 @@ struct UniformMatrixSize4x4 {
     static void Set(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value) { glUniformMatrix4fv(location, count, transpose, value); }
 };
 
+struct UniformMatrixSize3x3 {
+    constexpr static std::size_t cols = 3;
+    constexpr static std::size_t rows = 3;
+
+    static void Set(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value) { glUniformMatrix3fv(location, count, transpose, value); }
+};
+
+struct UniformMatrixSize3x2 {
+    constexpr static std::size_t cols = 3;
+    constexpr static std::size_t rows = 2;
+
+    static void Set(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value) { glUniformMatrix3x2fv(location, count, transpose, value); }
+};
+
 using UniformMatrix4f = UniformMatrix<UniformMatrixSize4x4>;
+using UniformMatrix3f = UniformMatrix<UniformMatrixSize3x3>;
+using UniformMatrix3x2f = UniformMatrix<UniformMatrixSize3x2>;
 
 } // namespace GL
