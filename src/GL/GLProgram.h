@@ -21,19 +21,19 @@ public:
     explicit constexpr Program(std::nullptr_t p) :
         Base(p) {}
 
-    static Program Create(const GLchar* vertex, const GLchar* geometry, const GLchar* fragment);
+    inline static Program Create(const GLchar* vertex, const GLchar* geometry, const GLchar* fragment);
 
     void Use() { glUseProgram(Get()); }
 
-    void Attach(const Shader& s);
-    void Detach(const Shader& s);
+    inline void Attach(const Shader& s);
+    inline void Detach(const Shader& s);
 
     void Link() { glLinkProgram(Get()); }
 
     Uniform GetUniformLocation(const GLchar* name) { return Uniform(glGetUniformLocation(Get(), name)); }
 
-    std::string GetInfoLog() const;
-    GLboolean GetLinkStatus() const;
+    inline std::string GetInfoLog() const;
+    inline GLboolean GetLinkStatus() const;
 
 private:
     static void Destroy(GLuint handle) { glDeleteProgram(handle); }

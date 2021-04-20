@@ -24,7 +24,7 @@ public:
     explicit Shader(ShaderType type) :
         Base(glCreateShader(type)) {}
 
-    static Shader Create(ShaderType type, const GLchar* string);
+    inline static Shader Create(ShaderType type, const GLchar* string);
 
     void Source(GLsizei count, const GLchar **string, const GLint *length = nullptr)    { glShaderSource(Get(), count, string, length); }
 
@@ -39,8 +39,8 @@ public:
 
     void Compile() { glCompileShader(Get()); }
 
-    std::string GetInfoLog() const;
-    GLboolean GetCompileStatus() const;
+    inline std::string GetInfoLog() const;
+    inline GLboolean GetCompileStatus() const;
 
 private:
     static void Destroy(GLuint handle) { glDeleteShader(handle); }

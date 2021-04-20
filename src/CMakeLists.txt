@@ -22,6 +22,7 @@ add_executable(GLApp
 target_include_directories(GLApp PUBLIC
    GL
    GLFW
+   GUI
    Image
    Util
 )

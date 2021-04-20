@@ -60,7 +60,13 @@ public:
 
     bool ShouldClose() const { return glfwWindowShouldClose(handle) != 0; }
 
-protected:
+    void GetSize(int* width, int* height) const { glfwGetWindowSize(handle, width, height); }
+
+    void Render()
+    {
+        RenderImpl();
+        SwapBuffers();    
+    }
 
 private:
     Window(
@@ -71,6 +77,8 @@ private:
 		Window*         share) :
         handle(glfwCreateWindow( width, height, title, monitor ? monitor->Get() : nullptr, share ? share->handle : nullptr))
     {}
+
+    virtual void RenderImpl() {}
 
     GLFWwindow* handle = nullptr;
 };
