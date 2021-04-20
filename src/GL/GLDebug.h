@@ -52,4 +52,3 @@ inline void RegisterCallback(Callback cb, void* userParam) { glDebugMessageCallb
 const char* ToString(GL::Debug::Severity s);
 const char* ToString(GL::Debug::Type t);
 const char* ToString(GL::Debug::Source s);
-
