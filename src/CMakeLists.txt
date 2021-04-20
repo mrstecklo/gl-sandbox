@@ -13,11 +13,15 @@ add_executable(GLApp
    Image/Image.cpp
 
    GL/GLDebug.cpp
-   GL/GLFWScope.cpp
+   
+   GLFW/GLFWScope.cpp
+
+   GUI/MainWindow.cpp
 )
 
 target_include_directories(GLApp PUBLIC
    GL
+   GLFW
    Image
    Util
 )

@@ -1,7 +1,3 @@
-
-
-
-
 #include "GLCPP.h"
 #include "GLFWScope.h"
 #include "Image.h"
@@ -60,23 +56,23 @@ static constexpr int height = 768;
 int main( void )
 {
 	try {
-		GLFWwindow* window = nullptr;
 		std::cout << "Hello world!" << std::endl;
-		// Initialise GLFW
+
 		GLFW::Scope glfw;
 
-		glfwWindowHint(GLFW_SAMPLES, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		auto window = glfw.CreateWindow()
+			.Hint(GLFW::SAMPLES, 4)
+			.Hint(GLFW::CONTEXT_VERSION_MAJOR, 3)
+			.Hint(GLFW::CONTEXT_VERSION_MINOR, 3)
+			.Hint(GLFW::OPENGL_FORWARD_COMPAT, true)
+			.Hint(GLFW::OPENGL_PROFILE, GLFW::OPENGL_CORE_PROFILE)
+			.Finalize(width, height, "GL Sandbox", nullptr, nullptr);
 
-		// Open a window and create its OpenGL context
-		window = glfwCreateWindow( width, height, "GL Sandbox", NULL, NULL);
-		if( window == NULL ){
+		if(!window.IsOpen()){
 			throw std::runtime_error("Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.");
 		}
-		glfwMakeContextCurrent(window);
+
+		window.MakeCurrent();
 
 		// Initialize GLEW
 		glewExperimental = true; // Needed for core profile
@@ -84,8 +80,8 @@ int main( void )
 			 throw std::runtime_error("Failed to initialize GLEW");
 		}
 
-		// Ensure we can capture the escape key being pressed below
-		glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+		window.SetInputMode(GLFW::STICKY_KEYS, true);
+
 
 		GL::Debug::Enable();
 		GL::Debug::RegisterCallback(MessageCallback, 0);
@@ -239,7 +235,7 @@ int main( void )
 		glm::mat4 TriangleMVP = VP * TriangleMat;
 
 		do{
-
+			
 			// Clear the screen
 			GL::Clear( GL::COLOR_BUFFER_BIT, GL::DEPTH_BUFFER_BIT );
 
@@ -275,13 +271,11 @@ int main( void )
 
 			GL::DrawArrays(GL::TRIANGLES, 3);
 
-			// Swap buffers
-			glfwSwapBuffers(window);
-			glfwPollEvents();
+			window.SwapBuffers();
+			glfw.PollEvents();
 
 		} // Check if the ESC key was pressed or the window was closed
-		while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-			glfwWindowShouldClose(window) == 0 );
+		while( window.GetKey(GLFW_KEY_ESCAPE) != GLFW::PRESS && !window.ShouldClose());
 
 		return 0;
 	} catch (const std::exception& e) {
