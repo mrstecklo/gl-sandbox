@@ -3,7 +3,8 @@
 #include "GLFWMonitor.h"
 #include "GLFWWindowCreatorFwd.h"
 #include "Noncopyable.h"
-#include <utility>
+#include <map>
+#include <mutex>
 
 namespace GLFW {
 
@@ -34,17 +35,9 @@ class Window : private Util::Noncopyable {
 public:
     friend class WindowCreator;
 
-    ~Window() { glfwDestroyWindow(handle); }
-
-    Window(Window&& other) :
-        handle(std::exchange(other.handle, nullptr))
-    {}
-
-    Window& operator=(Window&& other)
-    {
-        std::swap(handle, other.handle);
-        return *this;
-    }
+    virtual ~Window();
+    Window(Window&& other);
+    Window& operator=(Window&& other);
 
     GLFWwindow* Get() { return handle; }
     bool IsOpen() const { return handle != nullptr; }
@@ -60,27 +53,40 @@ public:
 
     bool ShouldClose() const { return glfwWindowShouldClose(handle) != 0; }
 
-    void GetSize(int* width, int* height) const { glfwGetWindowSize(handle, width, height); }
+    void GetWindowSize(int* width, int* height) const { glfwGetWindowSize(handle, width, height); }
+    void GetFrameBufferSize(int* width, int* height) const { glfwGetFramebufferSize(handle, width, height);}
 
     void Render()
     {
-        RenderImpl();
+        MakeCurrent();
+        OnRender();
         SwapBuffers();    
     }
 
 private:
+
     Window(
         int  	        width,
 		int             height,
 		const char*  	title,
 		Monitor*  	    monitor,
-		Window*         share) :
-        handle(glfwCreateWindow( width, height, title, monitor ? monitor->Get() : nullptr, share ? share->handle : nullptr))
-    {}
+		Window*         share);
 
-    virtual void RenderImpl() {}
+    virtual void OnRender() {}
+    virtual void OnResize(int width, int height) {};
+
+    void Resize(int width, int height)
+    {
+        MakeCurrent();
+        OnResize(width, height);
+    }
+
+    static void FramebufferSizeCallback(GLFWwindow* handle, int width, int height);
 
     GLFWwindow* handle = nullptr;
+
+    static std::map<GLFWwindow*, Window*>   instances;
+    static std::mutex                       mapMx;
 };
 
 } // namespace GLFW

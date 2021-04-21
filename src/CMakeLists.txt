@@ -15,6 +15,7 @@ add_executable(GLApp
    GL/GLDebug.cpp
    
    GLFW/GLFWScope.cpp
+   GLFW/GLFWWindow.cpp
 
    GUI/MainWindow.cpp
 )

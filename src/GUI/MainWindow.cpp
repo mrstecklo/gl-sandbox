@@ -1,7 +1,6 @@
 #include "MainWindow.h"
 #include "Image.h"
 
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -161,57 +160,72 @@ MainWindow::MainWindow(GLFW::Window&& other) :
         program.Use();
         UVMat.Set(ivertedUVMat);
     }
-}
 
-void MainWindow::RenderImpl()
-{
-    int width, height;
-    GetSize(&width, &height);
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) width / (float)height, 0.1f, 100.f);
+   
 
-    glm::mat4 View = glm::lookAt(
-			glm::vec3(4,3,-3), // Camera is at (4,3,3), in World Space
-			glm::vec3(0,0,0), // and looks at the origin
-			glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+    CubeMat = glm::mat4(1.0f);
+    TriangleMat = glm::translate(glm::vec3(2.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
+
+
+    view = glm::lookAt(
+			glm::vec3(4,3,-3),
+			glm::vec3(0,0,0),
+			glm::vec3(0,1,0)
 			);
 
-    glm::mat4 CubeMat = glm::mat4(1.0f);
-    glm::mat4 TriangleMat = glm::translate(glm::vec3(2.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
-    
-    glm::mat4 VP = Projection * View;
+    int width, height;
+    GetFrameBufferSize(&width, &height);
 
+    const auto ratio = static_cast<float>(width) / static_cast<float>(height);
+
+    projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.f);
+    VP = projection * view;
+}
+
+MainWindow::~MainWindow()
+{
+    MakeCurrent();
+}
+
+void MainWindow::OnResize(int width, int height)
+{
+    const auto ratio = static_cast<float>(width) / static_cast<float>(height);
+    projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.f);
+    VP = projection * view;
+    glViewport(0, 0, width, height);
+}
+
+void MainWindow::OnRender()
+{
     glm::mat4 CubeMVP = VP * CubeMat;
     glm::mat4 TriangleMVP = VP * TriangleMat;
 
-    // Clear the screen
     GL::Clear( GL::COLOR_BUFFER_BIT, GL::DEPTH_BUFFER_BIT );
 
-    // Use our shader
     program.Use();
     MVP.Set(&CubeMVP[0][0]);
-    // 1rst attribute buffer : vertices
+
     GL::VertexAttribArray vertices(attrVertices);
     GL::VertexAttribArray UVs(attrUV);
 
     vertexBuffer.Bind();
     GL::VertexAttribPointer(
         attrVertices,
-        vertexSize,          // size
-        GL::FLOAT,           // type
-        0,                   // stride
-        nullptr              // array buffer offset
+        vertexSize,
+        GL::FLOAT,
+        0,
+        nullptr
     );
 
     UVBuffer.Bind();
     GL::VertexAttribPointer(
         attrUV,
-        UVSize,          // size
-        GL::FLOAT,           // type
-        0,                   // stride
-        nullptr              // array buffer offset
+        UVSize,
+        GL::FLOAT,
+        0,
+        nullptr
     );
 
-    // Draw the triangle !
     GL::DrawArrays(GL::TRIANGLES, numVertices);
 
     MVP.Set(&TriangleMVP[0][0]);

@@ -89,19 +89,15 @@ private:
     int value;
 };
 
+enum Int : int;
+
 class IntegralHintValue : public HintValueBase {
 public:
-    constexpr IntegralHintValue(int v) :
+    constexpr IntegralHintValue(Int v) :
         HintValueBase((v < 0 || v > INT_MAX) ? INT_MAX : v)
     {}
 
     constexpr IntegralHintValue(AnyHintValue v) : HintValueBase(v) {}
-};
-
-class BooleanHintValue : public HintValueBase {
-public:
-    constexpr BooleanHintValue(bool v) :
-        HintValueBase(v) {}
 };
 
 enum DefaultWindowHintsType { DEFAULT_WINDOW_HINTS };

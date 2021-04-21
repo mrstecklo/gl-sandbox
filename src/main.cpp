@@ -24,12 +24,12 @@ int main( void )
 
 		GUI::MainWindow window(
 			glfw.CreateWindow()
-			.Hint(GLFW::SAMPLES, 4)
+			.Hint(GLFW::SAMPLES, GLFW::Int(4))
 			.Hint(GLFW::CONTEXT_VERSION_MAJOR, 3)
 			.Hint(GLFW::CONTEXT_VERSION_MINOR, 3)
 			.Hint(GLFW::OPENGL_FORWARD_COMPAT, true)
 			.Hint(GLFW::OPENGL_PROFILE, GLFW::OPENGL_CORE_PROFILE)
-			.Finalize(2048, 768, "GL Sandbox", nullptr, nullptr));
+			.Finalize(1024, 768, "GL Sandbox", nullptr, nullptr));
 
 		if(!window.IsOpen()){
 			throw std::runtime_error("Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.");

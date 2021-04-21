@@ -2,15 +2,18 @@
 
 #include "GLCPP.h"
 #include "GLFWWindow.h"
+#include <glm/glm.hpp>
 
 namespace GUI {
 
 class MainWindow : public GLFW::Window {
 public:
     MainWindow(GLFW::Window&& other);
+    ~MainWindow() override;
 
 private:
-    void RenderImpl() override;
+    void OnRender() override;
+    void OnResize(int width, int height) override;
 
     static constexpr GLint vertexSize = 3;
     static constexpr GLint UVSize = 2;
@@ -32,6 +35,12 @@ private:
 
     GL::Program program {nullptr};
     GL::UniformMatrix4f MVP{0};
+
+    glm::mat4 projection;
+    glm::mat4 view;
+    glm::mat4 VP;
+    glm::mat4 CubeMat;
+    glm::mat4 TriangleMat;
 };
 
 } // namespace GUI
