@@ -2,9 +2,6 @@
 
 namespace GLFW {
 
-std::map<GLFWwindow*, Window*> Window::instances;
-std::mutex Window::mapMx;
-
 Window::Window(
         int  	        width,
         int             height,
@@ -14,48 +11,67 @@ Window::Window(
     handle(glfwCreateWindow( width, height, title, monitor ? monitor->Get() : nullptr, share ? share->handle : nullptr))
 {
     if(handle) {
-        std::unique_lock<std::mutex> guard(mapMx);
-        instances[handle] = this;
-        guard.unlock();
+        glfwSetWindowUserPointer(handle, this); 
+
+        Size s;
+        GetFrameBufferSize(&s.width, &s.height);
+        size = s;
+
         glfwSetFramebufferSizeCallback(handle, FramebufferSizeCallback);
     }
 }
 
 Window::~Window() {
-    if(handle) {
-        glfwDestroyWindow(handle);
-        std::lock_guard<std::mutex> guard(mapMx);
-        instances.erase(handle);
+    glfwDestroyWindow(handle);
+}
+
+void Window::swap(Window& l, Window& r)
+{
+    std::unique_lock<std::mutex> lock1(l.handleMx, std::defer_lock);
+    std::unique_lock<std::mutex> lock2(r.handleMx, std::defer_lock);
+    std::lock(lock1, lock2);
+
+    std::swap(l.handle, r.handle);
+    if(l.handle) {
+        glfwSetWindowUserPointer(l.handle, &l); 
     }
+    if(r.handle) {
+        glfwSetWindowUserPointer(r.handle, &r); 
+    }
+    l.size = r.size.exchange(l.size);
 }
 
 Window::Window(Window&& other)
 {
-    if(other.handle) {
-        std::lock_guard<std::mutex> guard(mapMx);
-        handle = std::exchange(other.handle, nullptr);
-        instances[handle] = this;
-    }
+    swap(*this, other);
 }
 
 Window& Window::operator=(Window&& other)
 {
-    std::lock_guard<std::mutex> guard(mapMx);
-    std::swap(handle, other.handle);
-    instances[handle] = this;
-    instances[other.handle] = &other;
-    instances.erase(nullptr);
+    swap(*this, other);
     return *this;
+}
+
+void Window::Render()
+{
+    MakeCurrent();
+    auto s = size.exchange({0, 0});
+    if(s.width != 0 && s.height != 0) {
+        OnResize(s.width, s.height);
+    }
+    OnRender();
+    SwapBuffers();    
 }
 
 void Window::FramebufferSizeCallback(GLFWwindow* handle, int width, int height)
 {
-    std::unique_lock<std::mutex> guard(mapMx);
-    auto it = instances.find(handle);
-    if(it != instances.end()) {
-        auto w = it->second;
-        guard.unlock();
-        w->Resize(width, height);
+    while(true) {
+        auto w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(handle));
+        std::unique_lock<std::mutex> guard(w->handleMx);
+        if(w->handle == handle) {
+            w->size = Size{width, height};
+            return;
+        }
     }
 }
 

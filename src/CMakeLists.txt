@@ -34,6 +34,10 @@ target_include_directories(GLApp SYSTEM PUBLIC
    ${GLM_INCLUDE_DIR}
 )
 
+target_compile_definitions(GLApp PUBLIC
+   _ENABLE_ATOMIC_ALIGNMENT_FIX
+)
+
 add_definitions(
    -DGLEW_STATIC
 )

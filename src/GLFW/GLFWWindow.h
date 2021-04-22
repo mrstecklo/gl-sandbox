@@ -3,7 +3,7 @@
 #include "GLFWMonitor.h"
 #include "GLFWWindowCreatorFwd.h"
 #include "Noncopyable.h"
-#include <map>
+#include <atomic>
 #include <mutex>
 
 namespace GLFW {
@@ -56,12 +56,7 @@ public:
     void GetWindowSize(int* width, int* height) const { glfwGetWindowSize(handle, width, height); }
     void GetFrameBufferSize(int* width, int* height) const { glfwGetFramebufferSize(handle, width, height);}
 
-    void Render()
-    {
-        MakeCurrent();
-        OnRender();
-        SwapBuffers();    
-    }
+    void Render();
 
 private:
 
@@ -75,18 +70,18 @@ private:
     virtual void OnRender() {}
     virtual void OnResize(int width, int height) {};
 
-    void Resize(int width, int height)
-    {
-        MakeCurrent();
-        OnResize(width, height);
-    }
+    static void swap(Window& l, Window& r);
 
     static void FramebufferSizeCallback(GLFWwindow* handle, int width, int height);
 
-    GLFWwindow* handle = nullptr;
+    struct Size {
+        int width;
+        int height;
+    };
 
-    static std::map<GLFWwindow*, Window*>   instances;
-    static std::mutex                       mapMx;
+    mutable std::mutex  handleMx;
+    GLFWwindow*         handle = nullptr;
+    std::atomic<Size>   size{{0, 0}};
 };
 
 } // namespace GLFW

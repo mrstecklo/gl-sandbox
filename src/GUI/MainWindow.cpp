@@ -4,7 +4,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-
 namespace GUI {
 
 const GLchar MainWindow::vertexShader[] =
@@ -172,14 +171,6 @@ MainWindow::MainWindow(GLFW::Window&& other) :
 			glm::vec3(0,0,0),
 			glm::vec3(0,1,0)
 			);
-
-    int width, height;
-    GetFrameBufferSize(&width, &height);
-
-    const auto ratio = static_cast<float>(width) / static_cast<float>(height);
-
-    projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.f);
-    VP = projection * view;
 }
 
 MainWindow::~MainWindow()

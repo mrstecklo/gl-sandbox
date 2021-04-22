@@ -18,8 +18,6 @@ void GLAPIENTRY MessageCallback (
 int main( void )
 {
 	try {
-		std::cout << "Hello world!" << std::endl;
-
 		GLFW::Scope glfw;
 
 		GUI::MainWindow window(
@@ -32,7 +30,7 @@ int main( void )
 			.Finalize(1024, 768, "GL Sandbox", nullptr, nullptr));
 
 		if(!window.IsOpen()){
-			throw std::runtime_error("Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.");
+			throw std::runtime_error("Failed to open GLFW window");
 		}
 
 		window.SetInputMode(GLFW::STICKY_KEYS, true);
@@ -45,7 +43,7 @@ int main( void )
 			glfw.PollEvents();
 		} while( window.GetKey(GLFW_KEY_ESCAPE) != GLFW::PRESS && !window.ShouldClose());
 
-		return 0;
+		
 	} catch (const std::exception& e) {
 		std::cout << "Exception: " << e.what() << std::endl;
 		return -1;
@@ -53,4 +51,7 @@ int main( void )
 		std::cout << "Unknown exception" << std::endl;
 		return -2;
 	}
+
+	std::cout << "Application finished successfully" << std::endl;
+	return 0;
 }
