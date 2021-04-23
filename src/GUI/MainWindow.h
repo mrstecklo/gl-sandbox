@@ -2,7 +2,7 @@
 
 #include "GLCPP.h"
 #include "GLFWWindow.h"
-#include <glm/glm.hpp>
+#include "Camera.h"
 
 namespace GUI {
 
@@ -36,11 +36,11 @@ private:
     GL::Program program {nullptr};
     GL::UniformMatrix4f MVP{0};
 
-    glm::mat4 projection;
-    glm::mat4 view;
     glm::mat4 VP;
     glm::mat4 CubeMat;
     glm::mat4 TriangleMat;
+
+    Camera    camera;
 };
 
 } // namespace GUI

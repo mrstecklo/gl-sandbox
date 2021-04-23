@@ -18,6 +18,7 @@ add_executable(GLApp
    GLFW/GLFWWindow.cpp
 
    GUI/MainWindow.cpp
+   GUI/Object.cpp
 )
 
 target_include_directories(GLApp PUBLIC
