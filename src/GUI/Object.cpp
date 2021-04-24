@@ -6,44 +6,80 @@ namespace GUI {
 
 void Object::LookAt(const glm::vec3& pos, const glm::vec3& up)
 {
-    const auto orig = glm::vec3(0.f, 0.f, -1.f);
+    //const auto orig = glm::vec3(0.f, 0.f, -1.f);
 
     auto d = pos - position;
 
-    if(glm::length2(d) < 0.0001f) {
+    auto distance2 = glm::length2(d);
+
+    if(!std::isnormal(distance2)) {
         rotation = glm::quat();
         return;
     }
 
-    auto dir = glm::normalize(d);
+    
 
-    auto cos1 = glm::dot(orig, dir);
+    const float distance = std::sqrt(distance2); // norm(orig) == 1.f
+    const auto cosAlpha = -d.z / distance; // dot(d, orig) / distance
+    //const auto halfSinAlpha2 = 0.5f * (1.f - cosAlpha);
+    const auto halfCosAlpha2 = 0.5f * (1.f + cosAlpha);
+    const auto halfCosAlpha = std::sqrt(halfCosAlpha2);
 
-    auto first = (glm::dot(dir, orig) < -1.f + 0.001f)
-        ? glm::quat(0.f, 0.f, 1.f, 0.f)
-        : glm::quat(dir, orig);
+    const auto axisNorm = distance * 2.f * halfCosAlpha;
 
-    auto theta = 2.f * std::acos(first.w);
-    auto pitheta = theta / 3.1415926535897932f;
+    /*glm::vec3 axis = std::isnormal(axisNorm)
+         ? glm::vec3(-d.y / axisNorm, d.x / axisNorm, 0.f) // cross(d, orig)
+         : glm::vec3(0.f, 1.f, 0.f);*/
 
-    auto cos2 = std::cos(theta);
+    const auto w = distance - d.z;
 
-    const auto sqrSin = sqr(first.x) + sqr(first.y) + sqr(first.z);
-    auto newUp = glm::normalize(glm::vec3(0.f, sqr(first.w) - sqrSin, 0.f) + 2.f * (first.w * glm::vec3(-first.z, 0.f, -first.x) + first.y * glm::vec3(first.x, first.y, first.z)));
-    //auto newUp = glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f) * first);
+    auto first = (w > 0.0001 * distance)
+        ? glm::quat(w, -d.y, d.x, 0.f)
+        : glm::quat(0.f, 0.f, 1.f, 0.f);
 
-    auto corrUp = glm::normalize(glm::cross(glm::cross(dir, up), dir));
+    /* glm::vec3 newUp(
+        2.f * (axis.y * axis.x),
+        2.f * (axis.y * axis.y) + cosAlpha,
+        2.f * (-halfCosAlpha * axis.x)
+    ); */
 
-    auto cos = glm::dot(newUp, corrUp);
+    glm::vec3 newUp(
+        -2.f * (d.x * d.y),
+         2.f * (d.x * d.x - d.z * w),
+         2.f * (w * d.y)
+    );
 
-    auto second = (cos < -1.f + 0.001f)
-        ? glm::quat(0.f, dir)
-        : glm::quat( // TODO: there must be a simpler way as we are always rotating around dir
-            corrUp,
-            newUp
-        );
+    //auto corrUp = glm::cross(glm::cross(d, up), d);
+    auto corrUp = distance2 * up - d * glm::dot(up, d);
+    auto upProjection2 = glm::length2(corrUp);
 
-    rotation = first * second;
+/*     if(!std::isnormal(upProjection2)) {
+        //rotation = glm::normalize(glm::quat(halfCosAlpha, axis.x, axis.y, 0.f));
+        rotation = glm::normalize(first);
+        return;
+    } */
+
+    float upProjection = std::sqrt(upProjection2);
+    float cosBeta = (std::isnormal(upProjection2))
+        ? glm::dot(up, newUp) * (0.5f / (upProjection *  (1.f + cosAlpha)))
+        : 1.f;
+    float halfSinBeta = std::sqrt(0.5f * (1.f - cosBeta));
+    float halfCosBeta = std::sqrt(0.5f * (1.f + cosBeta));
+
+    const auto axis2norm = upProjection * 2.f * halfCosBeta;
+
+    auto axis2 = d * (halfSinBeta / distance);
+    //glm::quat second(halfCosBeta, axis2.x, axis2.y, axis2.z);
+
+    rotation = glm::normalize(glm::quat(
+        first.w * halfCosBeta   - first.x * axis2.x         - first.y * axis2.y,
+        first.w * axis2.x       + first.x * halfCosBeta     + first.y * axis2.z,
+        first.w * axis2.y       + first.y * halfCosBeta     - first.x * axis2.z,
+        first.w * axis2.z       + first.x * axis2.y         - first.y * axis2.x
+    ));
+
+    //rotation = glm::normalize(first * second);
+    //rotation = first;
 }
 
 } // namespace GUI
