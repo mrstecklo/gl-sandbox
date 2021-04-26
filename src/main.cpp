@@ -5,11 +5,11 @@
 void GLAPIENTRY MessageCallback (
     GL::Debug::Source source,
     GL::Debug::Type type,
-    GLuint id,
+    GLuint /* id */,
     GL::Debug::Severity severity,
-    GLsizei size,
+    GLsizei /* size */,
     const GLchar* message,
-    const void* userParam)
+    const void* /* userParam */)
 {
 	std::cout << ToString(type) << ": " << ToString(severity) << ": " << ToString(source) << std::endl
 		<< message << std::endl;

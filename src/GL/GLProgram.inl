@@ -56,7 +56,7 @@ GLboolean Program::GetLinkStatus() const
 {
     GLint result = GL_FALSE;
     glGetProgramiv(Get(), GL_LINK_STATUS, &result);
-    return result;
+    return result != GL_FALSE;
 }
 
 std::string Program::GetInfoLog() const

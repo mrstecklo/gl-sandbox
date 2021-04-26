@@ -17,13 +17,13 @@ public:
     void SetPosition(const glm::vec3& p) { position = p; }
     void SetRotation(const glm::quat& r) { rotation = r; }
 
-    void LookAt(const glm::vec3& pos, const glm::vec3& up);
+    void LookAt(const glm::vec3& eye, const glm::vec3& up);
+    void LookAt(const glm::vec3& pos, const glm::vec3& eye, const glm::vec3& up);
 
     const glm::vec3& GetPosition() const { return position; }
     const glm::quat& GetRotation() const { return rotation; }
 
-
-    static constexpr float sqr(float x) { return x * x; }
+    static glm::quat LookInDirection(const glm::vec3& dir, const glm::vec3& up);
 
 private:
     glm::vec3 position;

@@ -68,7 +68,7 @@ private:
 		Window*         share);
 
     virtual void OnRender() {}
-    virtual void OnResize(int width, int height) {};
+    virtual void OnResize(int /* width */, int /* height */) {};
 
     static void swap(Window& l, Window& r);
 

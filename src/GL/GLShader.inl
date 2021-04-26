@@ -18,7 +18,7 @@ GLboolean Shader::GetCompileStatus() const
 {
     GLint result = GL_FALSE;
     glGetShaderiv(Get(), GL_COMPILE_STATUS, &result);
-    return result;
+    return result != GL_FALSE;
 }
 
 std::string Shader::GetInfoLog() const

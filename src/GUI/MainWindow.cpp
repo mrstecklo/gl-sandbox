@@ -165,8 +165,10 @@ MainWindow::MainWindow(GLFW::Window&& other) :
     CubeMat = glm::mat4(1.0f);
     TriangleMat = glm::translate(glm::vec3(2.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
 
-    camera.SetPosition(glm::vec3(0.f, 0.f, -10.f));
-    camera.LookAt(glm::vec3(0.f, 0.f, 0.f) , glm::vec3(1.f, -1.0f, 0.f));
+    camera.LookAt(
+        glm::vec3(5.f, 2.f, -10.f),
+        glm::vec3(0.f, 0.f, 0.f),
+        glm::vec3(0.f, 1.0f, 0.f));
 }
 
 MainWindow::~MainWindow()
@@ -176,7 +178,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnResize(int width, int height)
 {
-    camera.SetWindowSize(width, height);
+    camera.SetWindowSize(static_cast<float>(width), static_cast<float>(height));
     VP = camera.GetProjectionMat() * camera.GetViewMat();
     glViewport(0, 0, width, height);
 }

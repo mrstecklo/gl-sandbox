@@ -35,16 +35,22 @@ target_include_directories(GLApp SYSTEM PUBLIC
    ${GLM_INCLUDE_DIR}
 )
 
-target_compile_definitions(GLApp PUBLIC
-   _ENABLE_ATOMIC_ALIGNMENT_FIX
-)
+if(MSVC)
+   target_compile_definitions(GLApp PUBLIC
+      _ENABLE_ATOMIC_ALIGNMENT_FIX
+   )
+
+   target_compile_options(GLApp PRIVATE /W4)
+
+   target_link_options(GLApp PUBLIC
+      /NODEFAULTLIB:LIBCMT
+   )
+else()
+   target_compile_options(GLApp PRIVATE -Wall)
+endif()
 
 add_definitions(
    -DGLEW_STATIC
-)
-
-target_link_options(GLApp PUBLIC
-   /NODEFAULTLIB:LIBCMT
 )
 
 target_link_directories(GLApp PUBLIC
