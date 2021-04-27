@@ -36,10 +36,6 @@ target_include_directories(GLApp SYSTEM PUBLIC
 )
 
 if(MSVC)
-   target_compile_definitions(GLApp PUBLIC
-      _ENABLE_ATOMIC_ALIGNMENT_FIX
-   )
-
    target_compile_options(GLApp PRIVATE /W4)
 
    target_link_options(GLApp PUBLIC

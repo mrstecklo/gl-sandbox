@@ -43,20 +43,19 @@ glm::quat Object::LookInDirection(const glm::vec3& d, const glm::vec3& up)
         const auto corrUp = distance2 * up - d * glm::dot(up, d);
 
         // these threee represent angle between corrUp and newUp, beta
-        const auto a = distance * glm::dot(up, newUp);          // c * cos(beta), [glm::dot(up, newUp) == glm::dot(corrUp, newUp) / distance2]
-        const auto b = glm::length(glm::cross(newUp, corrUp));  // c * sin(beta) * distance
-        const auto c = glm::length(corrUp) * w;                 // hypothenuse
+        const auto a = glm::dot(corrUp, newUp);                 // c * cos(beta), [glm::dot(up, newUp) == glm::dot(corrUp, newUp) / distance2]
+        const auto b = glm::length(glm::cross(newUp, corrUp));  // c * sin(beta)
+        const auto c = distance * w * glm::length(corrUp);      // hypothenuse
 
         const auto den = c - a;                                 // c * (1 - cos(beta))
 
         if(std::isnormal(c) && (den > c * 0.0001f)) { // up is not collinear with d and (cos(beta) != 1, beta != 0)
-            const auto dd = den * distance;
             // glm::quat second(b, d.x *dd, d.y * dd, d.z * dd)
             return glm::normalize(glm::quat( // second * first
                 w * b,
-                dd * d.x - d.y * b,
-                dd * d.y + d.x * b,
-                dd * d.z - den * distance2
+                den * d.x - d.y * b,
+                den * d.y + d.x * b,
+                -den * w
             ));
         } else {                                      // up is collinear with d or (cos(beta) == 1, beta == 0)
             // glm::quat second(1, 0, 0, 0)

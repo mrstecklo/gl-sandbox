@@ -17,6 +17,8 @@ public:
     void SetPosition(const glm::vec3& p) { position = p; }
     void SetRotation(const glm::quat& r) { rotation = r; }
 
+    void Rotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
+
     void LookAt(const glm::vec3& eye, const glm::vec3& up);
     void LookAt(const glm::vec3& pos, const glm::vec3& eye, const glm::vec3& up);
 

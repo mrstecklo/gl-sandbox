@@ -179,12 +179,26 @@ MainWindow::~MainWindow()
 void MainWindow::OnResize(int width, int height)
 {
     camera.SetWindowSize(static_cast<float>(width), static_cast<float>(height));
-    VP = camera.GetProjectionMat() * camera.GetViewMat();
+    //VP = camera.GetProjectionMat() * camera.GetViewMat();
     glViewport(0, 0, width, height);
 }
 
 void MainWindow::OnRender()
 {
+    const auto mouse = GetCursorPos();
+    const auto window = GetWindowSize();
+    const GLFW::PointD center {static_cast<double>(window.x / 2), static_cast<double>(window.y / 2)};
+    SetCursorPos(center.x, center.y);
+
+    const auto horizontalAngle = mouseSpeed * static_cast<float>(center.x - mouse.x);
+	const auto verticalAngle   = mouseSpeed * static_cast<float>(center.y - mouse.y);
+
+    glm::quat vert(-std::cos(verticalAngle), std::sin(verticalAngle), 0.f, 0.f);
+    glm::quat hor(-std::cos(horizontalAngle), 0.f, std::sin(horizontalAngle), 0.f);
+
+    camera.Rotate(hor * vert);
+    VP = camera.GetProjectionMat() * camera.GetViewMat();
+
     glm::mat4 CubeMVP = VP * CubeMat;
     glm::mat4 TriangleMVP = VP * TriangleMat;
 

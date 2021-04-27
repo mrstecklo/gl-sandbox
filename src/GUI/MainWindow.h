@@ -3,6 +3,7 @@
 #include "GLCPP.h"
 #include "GLFWWindow.h"
 #include "Camera.h"
+#include <chrono>
 
 namespace GUI {
 
@@ -41,6 +42,10 @@ private:
     glm::mat4 TriangleMat;
 
     Camera    camera;
+
+    using Clock = std::chrono::system_clock;
+    Clock::time_point   lastFrame = Clock::time_point::min();
+    float               mouseSpeed = 0.005f;
 };
 
 } // namespace GUI
