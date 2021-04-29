@@ -22,10 +22,14 @@ public:
     void LookAt(const glm::vec3& eye, const glm::vec3& up);
     void LookAt(const glm::vec3& pos, const glm::vec3& eye, const glm::vec3& up);
 
+    void FPLookAt(const glm::vec3& eye);
+    void FPLookAt(const glm::vec3& pos, const glm::vec3& eye);
+
     const glm::vec3& GetPosition() const { return position; }
     const glm::quat& GetRotation() const { return rotation; }
 
     static glm::quat LookInDirection(const glm::vec3& dir, const glm::vec3& up);
+    static glm::quat FPLookInDirection(const glm::vec3& dir);
 
 private:
     glm::vec3 position;
