@@ -166,7 +166,7 @@ MainWindow::MainWindow(GLFW::Window&& other) :
     TriangleMat = glm::translate(glm::vec3(2.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
 
     camera.FPLookAt(
-        glm::vec3(5.f, 10.f, -10.f),
+        glm::vec3(2.f, 5.f, 10.f),
         glm::vec3(0.f, 0.f, 0.f));
 }
 
@@ -225,7 +225,7 @@ void MainWindow::OnRender()
         )
     );
     
-    camera.SetRotation(rottt);
+    //camera.SetRotation(rottt);
 
     //camera.Rotate(vert);
     //camera.Rotate(hor);

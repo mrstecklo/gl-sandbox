@@ -15,7 +15,7 @@ void Object::LookAt(const glm::vec3& pos, const glm::vec3& eye, const glm::vec3&
 
 void Object::FPLookAt(const glm::vec3& eye)
 {
-    rotation = FPLookInDirection(eye - position);
+    rotation = FPLookInDirection2(eye - position);   
 }
 
 void Object::FPLookAt(const glm::vec3& pos, const glm::vec3& eye)
@@ -130,6 +130,43 @@ glm::quat Object::FPLookInDirection(const glm::vec3& d)
         // glm::quat first(0, 0, 1, 0) - rotate around Y
         // glm::quat second(1, 0, 0, 0) - cos(beta) == 1, beta == 0
         return glm::quat(0.f, 0.f, 1.f, 0.f); // second * first
+    }
+}
+
+glm::quat Object::FPLookInDirection2(const glm::vec3& d)
+{
+    // the same as LookInDirection, but up is glm::vec3(0, 1, 0)
+
+    const auto distance2 = glm::length2(d);
+
+    if(!std::isnormal(distance2)) {
+        return glm::quat();
+    }
+
+    const float distance = std::sqrt(distance2);
+
+    auto horiz2 = d.x * d.x + d.z * d.z;
+    auto horiz = std::sqrt(horiz2);
+
+    auto cosAlpha = horiz / distance;
+    //auto sinAlpha = horiz / distance;
+
+    auto sinHalfAlpha = std::sqrt(0.5f * (1.f - cosAlpha));
+    auto cosHalfAlpha = std::sqrt(0.5f * (1.f + cosAlpha));
+
+    glm::quat first(cosHalfAlpha, sinHalfAlpha, 0.f, 0.f);
+
+    if(std::isnormal(horiz)) {
+        auto cosBeta = -d.z / horiz;
+
+        auto sinHalfBeta = std::sqrt(0.5f * (1.f - cosBeta));
+        auto cosHalfBeta = std::sqrt(0.5f * (1.f + cosBeta));
+
+        glm::quat second(cosHalfBeta, 0.f, -sinHalfBeta, 0.f);
+
+        return glm::normalize(second * first);
+    } else {
+        return glm::normalize(first);
     }
 }
 

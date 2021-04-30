@@ -30,6 +30,7 @@ public:
 
     static glm::quat LookInDirection(const glm::vec3& dir, const glm::vec3& up);
     static glm::quat FPLookInDirection(const glm::vec3& dir);
+    static glm::quat FPLookInDirection2(const glm::vec3& dir);
 
 private:
     glm::vec3 position;
