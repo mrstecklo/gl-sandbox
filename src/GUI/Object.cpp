@@ -175,7 +175,25 @@ glm::vec3 Object::GetDirection() const
     return glm::vec3(
          2.f * (rotation.w * rotation.y - rotation.z * rotation.x),
         -2.f * (rotation.w * rotation.x + rotation.z * rotation.y),
-         2.f * (rotation.x * rotation.x + rotation.y * rotation.y) - 1.f
+         2.f * (sqr(rotation.x) + sqr(rotation.y)) - 1.f
+    );
+}
+
+glm::vec3 Object::GetRight() const
+{
+    return glm::vec3(
+        1.f - 2.f * (sqr(rotation.z) + sqr(rotation.y)),
+        2.f * (rotation.y * rotation.x - rotation.z * rotation.w),
+        2.f * (rotation.y * rotation.w - rotation.z * rotation.x)
+    );
+}
+
+glm::vec3 Object::GetUp() const
+{
+    return glm::vec3(
+        2.f * (rotation.w * rotation.z + rotation.x * rotation.y),
+        1.f - 2.f * (sqr(rotation.x) + sqr(rotation.z)),
+        2.f * (rotation.y * rotation.z - rotation.w * rotation.x)
     );
 }
 

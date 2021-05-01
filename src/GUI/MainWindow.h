@@ -37,15 +37,16 @@ private:
     GL::Program program {nullptr};
     GL::UniformMatrix4f MVP{0};
 
-    glm::mat4 VP;
+    //glm::mat4 VP;
     glm::mat4 CubeMat;
     glm::mat4 TriangleMat;
 
     Camera    camera;
 
     using Clock = std::chrono::system_clock;
-    Clock::time_point   lastFrame = Clock::time_point::min();
-    float               mouseSpeed = 0.005f;
+    Clock::time_point   lastFrame = Clock::time_point::max();
+    float               mouseSpeed = 0.000005f;
+    float               speed = 0.000005f;
 };
 
 } // namespace GUI

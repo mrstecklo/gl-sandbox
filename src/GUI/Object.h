@@ -17,6 +17,8 @@ public:
     void SetPosition(const glm::vec3& p) { position = p; }
     void SetRotation(const glm::quat& r) { rotation = r; }
 
+    void Translate(const glm::vec3& p) { position += p; }
+
     void Rotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
 
     // rotates object keeping its Y as close to global Y as possible (just like first-player camera)
@@ -38,6 +40,10 @@ public:
 
     // returns objects -Z direction
     glm::vec3 GetDirection() const;
+    // returns objects +X direction
+    glm::vec3 GetRight() const;
+    // returns objects +Y direction
+    glm::vec3 GetUp() const;
 
     // return quaternion that turns object's -Z to dir and Y to cross(dir, cross(up, dir))
     static glm::quat LookInDirection(const glm::vec3& dir, const glm::vec3& up);

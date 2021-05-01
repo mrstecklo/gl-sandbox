@@ -166,8 +166,8 @@ MainWindow::MainWindow(GLFW::Window&& other) :
     TriangleMat = glm::translate(glm::vec3(-5.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
 
     camera.FPLookAt(
-        glm::vec3(0.f, 0.f, 0.f),
-        glm::vec3(0.f, 0.f, 1.f));
+        glm::vec3(5.f, 2.f, -10.f),
+        glm::vec3(0.f, 0.f, 0.f));
 }
 
 MainWindow::~MainWindow()
@@ -184,16 +184,51 @@ void MainWindow::OnResize(int width, int height)
 
 void MainWindow::OnRender()
 {
+    auto now = Clock::now();
+
+    const auto duration =
+        (now > lastFrame)
+        ? std::chrono::duration_cast<std::chrono::microseconds>(now - lastFrame)
+        : std::chrono::microseconds(0);
+
+    lastFrame = now;
+    
+    const auto microseconds = static_cast<float>(duration.count());
+
     const auto mouse = GetCursorPos();
     const auto window = GetWindowSize();
     const GLFW::PointD center {static_cast<double>(window.x / 2), static_cast<double>(window.y / 2)};
     SetCursorPos(center.x, center.y);
 
-    const auto precession = mouseSpeed * static_cast<float>(mouse.x - center.x);
-	const auto nutation   = mouseSpeed * static_cast<float>(mouse.y - center.y);
+    const auto mouseUnit = microseconds * mouseSpeed;
+
+    const auto precession = mouseUnit * static_cast<float>(mouse.x - center.x);
+	const auto nutation   = mouseUnit * static_cast<float>(mouse.y - center.y);
 
     camera.FPRotate(precession, nutation);
-    VP = camera.GetProjectionMat() * camera.GetViewMat();
+
+    const auto keyboardUnit = microseconds * speed;
+
+    auto forward = keyboardUnit * camera.GetDirection();
+    auto right = keyboardUnit * camera.GetRight();
+
+    if(GetKey(GLFW_KEY_UP) == GLFW::PRESS) {
+        camera.Translate(forward);
+    }
+
+    if(GetKey(GLFW_KEY_DOWN) == GLFW::PRESS) {
+        camera.Translate(-forward);
+    }
+
+    if(GetKey(GLFW_KEY_RIGHT) == GLFW::PRESS) {
+        camera.Translate(right);
+    }
+
+    if(GetKey(GLFW_KEY_LEFT) == GLFW::PRESS) {
+        camera.Translate(-right);
+    }
+
+    auto VP = camera.GetProjectionMat() * camera.GetViewMat();
 
     glm::mat4 CubeMVP = VP * CubeMat;
     glm::mat4 TriangleMVP = VP * TriangleMat;
