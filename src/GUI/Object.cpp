@@ -15,7 +15,7 @@ void Object::LookAt(const glm::vec3& pos, const glm::vec3& eye, const glm::vec3&
 
 void Object::FPLookAt(const glm::vec3& eye)
 {
-    rotation = FPLookInDirection2(eye - position);   
+    rotation = FPLookInDirection(eye - position);   
 }
 
 void Object::FPLookAt(const glm::vec3& pos, const glm::vec3& eye)
@@ -36,19 +36,22 @@ glm::quat Object::LookInDirection(const glm::vec3& d, const glm::vec3& up)
         return glm::quat();
     }
 
+	// first rotate around cross(dir, orig)
     const float distance = std::sqrt(distance2);    // this actually must be length(d) * length(orig)
     const auto w = distance - d.z;                  // (1 + cos(alpha)) * distance   
 
-    if(w > 0.0001f * distance) {    // cos(alpha) != -1, alpha != pi
+    if(w > 0.00001f * distance) {    // cos(alpha) != -1, alpha != pi
         // glm::quat first(w, -d.y, d.x, 0.f)
         // newUp is inv(first) * origUp - position of Y after first rotation
         // vectors and quaternions are not normalized until return, this allows to simplify computations
         const glm::vec3 newUp( // norm(newUp) = distance * w
             -d.x * d.y,
-            d.x * d.x - d.z * w,
+            sqr(d.x) - d.z * w,
             w * d.y
         );
 
+		// now rotate around dir, so that object's Y is up
+		
         // this is a projection of 'up' on a plane orthogonal to 'd'
         // it is also multiplied by distance2 to avoid division
         const auto corrUp = distance2 * up - d * glm::dot(up, d);
@@ -60,7 +63,7 @@ glm::quat Object::LookInDirection(const glm::vec3& d, const glm::vec3& up)
 
         const auto den = c - a;                                 // c * (1 - cos(beta))
 
-        if(std::isnormal(c) && (den > c * 0.0001f)) { // up is not collinear with d and (cos(beta) != 1, beta != 0)
+        if(std::isnormal(c) && (den > c * 0.00001f)) { // up is not collinear with d and (cos(beta) != 1, beta != 0)
             // glm::quat second(b, d.x *den, d.y * den, d.z * den)
             return glm::normalize(glm::quat( // second * first
                 w * b,
@@ -76,10 +79,10 @@ glm::quat Object::LookInDirection(const glm::vec3& d, const glm::vec3& up)
         // glm::quat first(0, 0, 1, 0) - rotate around Y
         // glm::vec3 newUp(0, 1, 0) == origUp
         // glm::vec3 corrUp(up.x, up.y, 0)
-        const auto c = std::sqrt(up.y * up.y + up.x * up.x);
+        const auto c = std::sqrt(sqr(up.y) + sqr(up.x));
         const auto den = c - up.y;                              // c * (1 - cos(beta))
 
-        if(std::isnormal(c) && (den > c * 0.0001f)) { // up is not collinear with d and (cos(beta) != 1, beta != 0)
+        if(std::isnormal(c) && (den > c * 0.00001f)) { // up is not collinear with d and (cos(beta) != 1, beta != 0)
             // glm::quat second(up.x, 0, 0, den)
             return glm::normalize(glm::quat(0.f, den, up.x, 0.f)); // second * first
         } else {                                      // up is collinear with d or (cos(beta) == 1, beta == 0)
@@ -92,82 +95,88 @@ glm::quat Object::LookInDirection(const glm::vec3& d, const glm::vec3& up)
 glm::quat Object::FPLookInDirection(const glm::vec3& d)
 {
     // the same as LookInDirection, but up is glm::vec3(0, 1, 0)
+    const float distance = glm::length(d);
 
-    const auto distance2 = glm::length2(d);
-
-    if(!std::isnormal(distance2)) {
+    if(!std::isnormal(distance)) {
         return glm::quat();
     }
 
-    const float distance = std::sqrt(distance2);    // this actually must be length(d) * length(orig)
-    const auto w = distance - d.z;                  // (1 + cos(alpha)) * distance   
+    // first rotate around Y - alpha
+    // then rotate around object's X - beta
 
-    if(w > 0.0001f * distance) {    // cos(alpha) != -1, alpha != pi
-        // glm::quat first(w, -d.y, d.x, 0.f)
+    const auto horiz = std::sqrt(sqr(d.x) + sqr(d.z));
+    const auto w1 = distance + horiz; // distance * (1 + cos(alpha))
 
-        auto horiz2 = d.x * d.x + d.z * d.z;
+    if(std::isnormal(horiz)) {
+        const auto w2 = horiz - d.z; // horiz * (1 + cos(beta))
 
-        // these threee represent angle between corrUp and newUp, beta
-        const auto a = horiz2 - d.z * distance;  // c * cos(beta)
-        const auto b = d.y * d.x;                // c * sin(beta)
-        const auto c = w * std::sqrt(horiz2);    // hypothenuse
-
-        const auto den = c - a;                                 // c * (1 - cos(beta))
-
-        if(std::isnormal(c) && (den > c * 0.0001f)) { // up is not collinear with d and (cos(beta) != 1, beta != 0)
-            // glm::quat second(b, d.x *den, d.y * den, d.z * den)
-            return glm::normalize(glm::quat( // second * first
-                w * b,
-                den * d.x - d.y * b,
-                den * d.y + d.x * b,
-                -den * w
-            ));
-        } else {                                      // up is collinear with d or (cos(beta) == 1, beta == 0)
-            // glm::quat second(1, 0, 0, 0)
-            return glm::normalize(glm::quat(w, -d.y, d.x, 0.f)); // second * first
+        if (w2 > horiz * 0.00001f) {
+            return glm::normalize(glm::quat( w1 * w2, -d.y * w2, w1 * d.x, -d.y * d.x));
+        } else {
+            return glm::normalize(glm::quat( 0.f, 0.f, w1, -d.y ));
         }
-    } else { // cos(alpha) == -1, alpha == pi, d = glm::vec3(0, 0, distance)
-        // glm::quat first(0, 0, 1, 0) - rotate around Y
-        // glm::quat second(1, 0, 0, 0) - cos(beta) == 1, beta == 0
-        return glm::quat(0.f, 0.f, 1.f, 0.f); // second * first
+    } else {
+        return glm::normalize(glm::quat( w1, -d.y, 0.f, 0.f ));
     }
 }
 
-glm::quat Object::FPLookInDirection2(const glm::vec3& d)
+void Object::FPRotate(float precession, float nutation)
 {
-    // the same as LookInDirection, but up is glm::vec3(0, 1, 0)
+    const auto cosAlpha = sqr(rotation.w) + sqr(rotation.y) - sqr(rotation.x) - sqr(rotation.z);
+    const auto sinAlpha = 2.f * (rotation.w * rotation.x + rotation.y * rotation.z);
 
-    const auto distance2 = glm::length2(d);
+    const auto cosBeta = sqr(rotation.w) + sqr(rotation.x) - sqr(rotation.y) - sqr(rotation.z);
+    const auto sinBeta = 2.f * (rotation.w * rotation.y + rotation.x * rotation.z);
 
-    if(!std::isnormal(distance2)) {
-        return glm::quat();
-    }
+    const auto sinP = std::sin(precession);
+    const auto cosP = std::cos(precession);
 
-    const float distance = std::sqrt(distance2);
+    const auto sinN = std::sin(nutation);
+    const auto cosN = std::cos(nutation);
 
-    auto horiz2 = d.x * d.x + d.z * d.z;
-    auto horiz = std::sqrt(horiz2);
+    rotation = FPRotateImpl(
+        cosAlpha * cosN - sinAlpha * sinN,
+        sinAlpha * cosN + cosAlpha * sinN,
+        cosBeta  * cosP - sinBeta  * sinP,
+        sinBeta  * cosP + cosBeta  * sinP
+    );
+}
 
-    auto cosAlpha = horiz / distance;
-    //auto sinAlpha = horiz / distance;
+glm::quat Object::FPRotateImpl(float cosAlpha, float sinAlpha, float cosBeta, float sinBeta)
+{
+    const auto w2 = 1 + cosBeta;
 
-    auto sinHalfAlpha = std::sqrt(0.5f * (1.f - cosAlpha));
-    auto cosHalfAlpha = std::sqrt(0.5f * (1.f + cosAlpha));
-
-    glm::quat first(cosHalfAlpha, sinHalfAlpha, 0.f, 0.f);
-
-    if(std::isnormal(horiz)) {
-        auto cosBeta = -d.z / horiz;
-
-        auto sinHalfBeta = std::sqrt(0.5f * (1.f - cosBeta));
-        auto cosHalfBeta = std::sqrt(0.5f * (1.f + cosBeta));
-
-        glm::quat second(cosHalfBeta, 0.f, -sinHalfBeta, 0.f);
-
-        return glm::normalize(second * first);
+    if(cosAlpha <= 0.f) { // clamp nutation to [-pi / 2; pi / 2]
+        if(sinAlpha > 0) {
+            if(w2 > 0.00001f) {
+                return glm::normalize(glm::quat( w2, w2, sinBeta, sinBeta ));
+            } else {
+                return glm::normalize(glm::quat( 0.f, 0.f, 1.f, 1.f ));
+            }
+        } else {
+            if(w2 > 0.00001f) {
+                return glm::normalize(glm::quat( w2, -w2, sinBeta, -sinBeta ));
+            } else {
+                return glm::normalize(glm::quat( 0.f, 0.f, 1.f, -1.f ));
+            }
+        }
     } else {
-        return glm::normalize(first);
+        const auto w1 = 1 + cosAlpha;
+        if(w2 > 0.00001f) {
+            return glm::normalize(glm::quat( w1 * w2, sinAlpha * w2, w1 * sinBeta, sinAlpha * sinBeta ));
+        } else {
+            return glm::normalize(glm::quat( 0.f, 0.f, w1, sinAlpha ));
+        }
     }
+}
+
+glm::vec3 Object::GetDirection() const
+{
+    return glm::vec3(
+         2.f * (rotation.w * rotation.y - rotation.z * rotation.x),
+        -2.f * (rotation.w * rotation.x + rotation.z * rotation.y),
+         2.f * (rotation.x * rotation.x + rotation.y * rotation.y) - 1.f
+    );
 }
 
 } // namespace GUI

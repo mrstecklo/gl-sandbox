@@ -163,11 +163,11 @@ MainWindow::MainWindow(GLFW::Window&& other) :
    
 
     CubeMat = glm::mat4(1.0f);
-    TriangleMat = glm::translate(glm::vec3(2.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
+    TriangleMat = glm::translate(glm::vec3(-5.f, 0.f, -1.f)) * glm::scale(glm::vec3(2.f, 2.f, 2.f));
 
     camera.FPLookAt(
-        glm::vec3(2.f, 5.f, 10.f),
-        glm::vec3(0.f, 0.f, 0.f));
+        glm::vec3(0.f, 0.f, 0.f),
+        glm::vec3(0.f, 0.f, 1.f));
 }
 
 MainWindow::~MainWindow()
@@ -189,46 +189,10 @@ void MainWindow::OnRender()
     const GLFW::PointD center {static_cast<double>(window.x / 2), static_cast<double>(window.y / 2)};
     SetCursorPos(center.x, center.y);
 
-    const auto horizontalAngle = mouseSpeed * static_cast<float>(center.x - mouse.x);
-	const auto verticalAngle   = mouseSpeed * static_cast<float>(center.y - mouse.y);
+    const auto precession = mouseSpeed * static_cast<float>(mouse.x - center.x);
+	const auto nutation   = mouseSpeed * static_cast<float>(mouse.y - center.y);
 
-    const auto cv = std::cos(verticalAngle);
-    const auto sv = std::sin(verticalAngle);
-
-    const auto ch = -std::cos(horizontalAngle);
-    const auto sh = std::sin(horizontalAngle);
-
-    glm::quat vert(-std::cos(verticalAngle), std::sin(verticalAngle), 0.f, 0.f);
-    glm::quat hor(-std::cos(horizontalAngle), 0.f, std::sin(horizontalAngle), 0.f);
-
-    glm::quat rot(
-        ch * cv,
-		ch * sv,
-		sh * cv,
-		- sh * sv
-    );
-
-    glm::quat rot1(
-        cv * ch,
-		sv * ch,
-		cv * sh,
-		sv * sh
-    );
-
-    auto& r = camera.GetRotation();
-
-    glm::quat rottt (
-        glm::vec3(
-            glm::pitch(r) + verticalAngle,
-            glm::yaw(r) + horizontalAngle,
-            glm::roll(r)
-        )
-    );
-    
-    //camera.SetRotation(rottt);
-
-    //camera.Rotate(vert);
-    //camera.Rotate(hor);
+    camera.FPRotate(precession, nutation);
     VP = camera.GetProjectionMat() * camera.GetViewMat();
 
     glm::mat4 CubeMVP = VP * CubeMat;
