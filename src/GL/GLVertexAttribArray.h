@@ -58,11 +58,33 @@ inline void VertexAttribPointer(
 inline void VertexAttribPointer(
     VertexAttrib    index,
     GLint  	        size,
+    FloatingType  	type,
+    GLboolean  	    /*normalized*/,
+    GLsizei  	    stride,
+    const GLvoid*  	pointer)
+{
+    VertexAttribPointer(index, size, type, stride, pointer);
+}
+
+inline void VertexAttribPointer(
+    VertexAttrib    index,
+    GLint  	        size,
     VertexAttribPackedType type,
     GLsizei  	    stride,
     const GLvoid*  	pointer)
 {
     glVertexAttribPointer(index, size, type.Get(), GL_FALSE, stride, pointer);
+}
+
+inline void VertexAttribPointer(
+    VertexAttrib    index,
+    GLint  	        size,
+    VertexAttribPackedType type,
+    GLboolean  	    /*normalized*/,
+    GLsizei  	    stride,
+    const GLvoid*  	pointer)
+{
+    VertexAttribPointer(index, size, type, stride, pointer);
 }
 
 inline void VertexAttribIPointer(

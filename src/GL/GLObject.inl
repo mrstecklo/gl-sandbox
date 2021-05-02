@@ -47,7 +47,7 @@ void ObjectArray<T>::Destroy(const GLuint& value)
 }
 
 template<class T>
-void ObjectArray<T>::Bind()
+void ObjectArray<T>::Bind() const
 {
     T::BindImpl(Get());
 }

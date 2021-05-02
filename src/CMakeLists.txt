@@ -19,9 +19,12 @@ add_executable(GLApp
 
    GUI/MainWindow.cpp
    GUI/Object.cpp
+
+   Tetris/Scene.cpp
 )
 
 target_include_directories(GLApp PUBLIC
+   .
    GL
    GLFW
    GUI

@@ -67,7 +67,7 @@ public:
 
     static Container Create(GLsizei n);
 
-    void Bind();
+    void Bind() const;
     static void BindDefault();
 
 protected:

@@ -23,7 +23,7 @@ public:
 
     inline static Program Create(const GLchar* vertex, const GLchar* geometry, const GLchar* fragment);
 
-    void Use() { glUseProgram(Get()); }
+    void Use() const { glUseProgram(Get()); }
 
     inline void Attach(const Shader& s);
     inline void Detach(const Shader& s);

@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "GLFWScope.h"
+#include "Tetris/Scene.h"
 #include <iostream>
 
 void GLAPIENTRY MessageCallback (
@@ -27,7 +28,9 @@ int main( void )
 			.Hint(GLFW::CONTEXT_VERSION_MINOR, 3)
 			.Hint(GLFW::OPENGL_FORWARD_COMPAT, true)
 			.Hint(GLFW::OPENGL_PROFILE, GLFW::OPENGL_CORE_PROFILE)
-			.Finalize(1024, 768, "GL Sandbox", nullptr, nullptr));
+			.Finalize(1024, 768, "GL Sandbox", nullptr, nullptr),
+			std::make_unique<Tetris::Scene>()
+		);
 
 		if(!window.IsOpen()){
 			throw std::runtime_error("Failed to open GLFW window");
