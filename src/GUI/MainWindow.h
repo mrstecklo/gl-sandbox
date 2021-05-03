@@ -3,8 +3,6 @@
 #include "MainWindowFwd.h"
 #include "Scene.h"
 #include "GLFW/Window.h"
-#include <chrono>
-#include <memory>
 
 namespace GUI {
 

@@ -67,13 +67,17 @@ void MainWindow::OnRender()
     GL::VertexAttribArray UVs(Program::attrUV);
 
     auto VP = scene->GetCamera().GetProjectionMat() * scene->GetCamera().GetViewMat();
+    GUI::Program* currentProram = nullptr;
 
     scene->ForEachModel(
-        [&VP](const Model& m)
+        [&VP, &currentProram](const Model& m)
         {
             auto MVP = VP * glm::translate(m.GetPosition()) * glm::mat4_cast(glm::inverse(m.GetRotation()));
-            m.GetProgram()->Use();
-            m.GetProgram()->GetMVP().Set(&MVP[0][0]);
+            if(currentProram != m.GetProgram()) {
+                currentProram = m.GetProgram();
+                currentProram->Use();
+            }
+            currentProram->GetMVP().Set(&MVP[0][0]);
 
             m.GetTexture()->Bind();
 

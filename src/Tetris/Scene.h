@@ -1,5 +1,6 @@
 #include "GUI/Scene.h"
 #include "GLCPP/VertexArray.h"
+#include "ResourceManager.h"
 
 namespace Tetris {
 
@@ -16,32 +17,19 @@ private:
     const GUI::Camera& GetCameraImpl() const override { return camera; }
     void ForEachObjectImpl(ObjectCb cb) const override;
     void ForEachModelImpl(ModelCb cb) const override;
-    
-
-    static constexpr GLint vertexSize = 3;
-    static constexpr GLint UVSize = 2;
-    static constexpr GLsizei numVertices = 36;
-
-    static constexpr auto attrVertices = GL::VertexAttrib(0);
-    static constexpr auto attrUV = GL::VertexAttrib(1);
-
-    static const GLchar vertexShader[];
-    static const GLchar fragmentShader[];
-
-    static const GLfloat g_vertex_buffer_data[numVertices][vertexSize];
-    static const GLfloat g_uv_buffer_data[numVertices][UVSize];
 
     GUI::Camera camera;
+    float       mouseSpeed = 0.000005f;
+    float       speed = 0.000005f;
 
     GL::VertexArray arr {nullptr};
 
-    GUI::Program program;
+    ResourceManager resources;
 
     GUI::Model cube;
     GUI::Model triangle;
 
-    float               mouseSpeed = 0.000005f;
-    float               speed = 0.000005f;
+    
 };
 
 } // namespace Tetris

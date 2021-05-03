@@ -21,6 +21,7 @@ add_executable(GLApp
    GUI/Object.cpp
 
    Tetris/Scene.cpp
+   Tetris/ResourceManager.cpp
 )
 
 target_include_directories(GLApp PUBLIC

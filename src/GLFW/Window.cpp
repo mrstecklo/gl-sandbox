@@ -14,7 +14,8 @@ Window::Window(
     SetThisAsUserPointer();
 }
 
-Window::~Window() {
+Window::~Window()
+{
     glfwDestroyWindow(handle);
 }
 

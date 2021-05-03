@@ -33,7 +33,7 @@ public:
     MouseMode GetMouseMode() const { return mouseMode; }
 
     Scene() = default;
-    virtual ~Scene() {}
+    virtual ~Scene() = default;
 
 protected:
     
