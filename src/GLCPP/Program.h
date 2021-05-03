@@ -1,12 +1,10 @@
 #pragma once
 
-#include "GLObject.h"
-#include "GLUniform.h"
+#include "Object.h"
+#include "Uniform.h"
 #include <string>
 
 namespace GL {
-
-enum UniformLocation : GLint;
 
 class Shader;
 
@@ -40,3 +38,5 @@ private:
 };
 
 } // namespace GL
+
+#include "Shader.h"

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "MainWindowFwd.h"
-#include "GLFWInput.h"
 #include "Camera.h"
 #include "Model.h"
-#include "Point.h"
+#include "Util/Point.h"
+#include "GLFW/Input.h"
 #include <functional>
 #include <chrono>
 

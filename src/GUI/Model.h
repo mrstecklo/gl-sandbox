@@ -1,10 +1,10 @@
 #pragma once
 
-#include "GLCPP.h"
+#include "GLCPP/Texture.h"
 #include "Object.h"
 #include "Program.h"
 #include "ArrayBuffer.h"
-#include "ResourceManager.h"
+//#include "ResourceManager.h"
 
 namespace GUI {
 

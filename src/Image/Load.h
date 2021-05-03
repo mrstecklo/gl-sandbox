@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLTexture.h"
+#include "GLCPP/Texture.h"
 #include <string>
 
 namespace Image {

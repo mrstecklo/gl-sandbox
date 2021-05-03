@@ -1,7 +1,7 @@
 #pragma once 
 
-#include "GLType.h"
-#include "Noncopyable.h"
+#include "Type.h"
+#include "Util/Noncopyable.h"
 
 namespace GL {
 

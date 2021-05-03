@@ -2,8 +2,8 @@
 
 #include <GL/glew.h>
 #include <vector>
-#include "Noncopyable.h"
-#include "ZeroOutAllocator.h"
+#include "Util/Noncopyable.h"
+#include "Util/ZeroOutAllocator.h"
 
 namespace GL {
 
@@ -85,4 +85,4 @@ private:
 
 } // namespace GL
 
-#include "GLObject.inl"
+#include "Object.inl"

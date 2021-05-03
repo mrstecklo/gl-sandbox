@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLFWScopeFwd.h"
+#include "ScopeFwd.h"
 #include <GLFW/glfw3.h>
 
 namespace GLFW {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "GLCPP.h"
+#include "GLCPP/Program.h"
+#include "GLCPP/VertexAttribArray.h"
 
 namespace GUI {
 

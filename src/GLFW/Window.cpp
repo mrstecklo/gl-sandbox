@@ -1,4 +1,4 @@
-#include "GLFWWindow.h"
+#include "Window.h"
 #include <utility>
 
 namespace GLFW {

@@ -1,6 +1,6 @@
-#include "Tetris/Scene.h"
-#include "Image.h"
-#include "MainWindow.h"
+#include "Scene.h"
+#include "Image/Load.h"
+#include "GUI/MainWindow.h"
 
 namespace Tetris {
 

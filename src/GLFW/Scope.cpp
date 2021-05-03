@@ -1,4 +1,4 @@
-#include "GLFWScope.h"
+#include "Scope.h"
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 

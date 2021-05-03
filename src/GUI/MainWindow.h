@@ -1,9 +1,8 @@
 #pragma once
 
 #include "MainWindowFwd.h"
-#include "GLCPP.h"
-#include "GLFWWindow.h"
 #include "Scene.h"
+#include "GLFW/Window.h"
 #include <chrono>
 #include <memory>
 

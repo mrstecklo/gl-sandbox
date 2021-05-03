@@ -1,4 +1,4 @@
-#include "GLDebug.h"
+#include "Debug.h"
 
 using namespace GL::Debug;
 

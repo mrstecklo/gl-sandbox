@@ -1,5 +1,5 @@
-#include "GLCPP.h"
 #include "GUI/Scene.h"
+#include "GLCPP/VertexArray.h"
 
 namespace Tetris {
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "GLObject.h"
-#include "GLProgram.h"
+#include "Program.h"
 
 namespace GL {
 
@@ -48,5 +47,5 @@ private:
 
 } // namespace GL
 
-#include "GLProgram.inl"
-#include "GLShader.inl"
+#include "Program.inl"
+#include "Shader.inl"

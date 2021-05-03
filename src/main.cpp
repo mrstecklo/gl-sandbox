@@ -1,6 +1,8 @@
-#include "MainWindow.h"
-#include "GLFWScope.h"
+#include "GLCPP/Debug.h"
 #include "Tetris/Scene.h"
+#include "GUI/MainWindow.h"
+#include "GLFW/Scope.h"
+
 #include <iostream>
 
 void GLAPIENTRY MessageCallback (

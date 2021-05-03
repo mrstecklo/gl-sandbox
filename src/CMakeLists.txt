@@ -10,12 +10,12 @@ set(GLFW_LIB_DIR CACHE PATH "Path to the glfw3.lib")
 add_executable(GLApp
    main.cpp
 
-   Image/Image.cpp
+   Image/Load.cpp
 
-   GL/GLDebug.cpp
+   GLCPP/Debug.cpp
    
-   GLFW/GLFWScope.cpp
-   GLFW/GLFWWindow.cpp
+   GLFW/Scope.cpp
+   GLFW/Window.cpp
 
    GUI/MainWindow.cpp
    GUI/Object.cpp
@@ -25,11 +25,6 @@ add_executable(GLApp
 
 target_include_directories(GLApp PUBLIC
    .
-   GL
-   GLFW
-   GUI
-   Image
-   Util
 )
 
 target_include_directories(GLApp SYSTEM PUBLIC
@@ -39,10 +34,17 @@ target_include_directories(GLApp SYSTEM PUBLIC
 )
 
 if(MSVC)
-   target_compile_options(GLApp PRIVATE /W4)
+   target_compile_options(GLApp PRIVATE
+      /W4
+      /wd4201
+   )
+
+   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
    target_link_options(GLApp PUBLIC
       /NODEFAULTLIB:LIBCMT
+      /NODEFAULTLIB:LIBCMTD
+      /NODEFAULTLIB:MSVCRT$<$<NOT:$<CONFIG:Debug>>:D>
    )
 else()
    target_compile_options(GLApp PRIVATE -Wall)

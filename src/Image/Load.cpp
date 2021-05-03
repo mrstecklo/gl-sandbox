@@ -1,4 +1,4 @@
-#include "Image.h"
+#include "Load.h"
 
 #include <fstream>
 #include <sstream>

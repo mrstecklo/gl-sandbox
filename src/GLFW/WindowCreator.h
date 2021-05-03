@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLFWWindow.h"
+#include "Window.h"
 #include  <limits.h>
 
 namespace GLFW {

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "GLCPP.h"
+#include "GLCPP/Buffer.h"
+#include "GLCPP/Draw.h"
 
 namespace GUI {
 

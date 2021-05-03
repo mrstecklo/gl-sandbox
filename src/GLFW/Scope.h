@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GLFWWindowCreator.h"
+#include "WindowCreator.h"
 #include <atomic>
 
 namespace GLFW {

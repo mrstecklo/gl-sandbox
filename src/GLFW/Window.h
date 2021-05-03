@@ -1,10 +1,10 @@
 #pragma once
 
-#include "GLFWMonitor.h"
-#include "GLFWWindowCreatorFwd.h"
-#include "GLFWInput.h"
-#include "Noncopyable.h"
-#include "Point.h"
+#include "Monitor.h"
+#include "WindowCreatorFwd.h"
+#include "Input.h"
+#include "Util/Noncopyable.h"
+#include "Util/Point.h"
 
 namespace GLFW {
 

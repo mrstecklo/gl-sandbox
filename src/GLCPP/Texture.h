@@ -1,10 +1,10 @@
 #pragma once
 
-#include "GLTextureTarget.h"
-#include "GLFormat.h"
-#include "GLType.h"
-#include "GLTextureFiltration.h"
-#include "GLObject.h"
+#include "TextureTarget.h"
+#include "Format.h"
+#include "Type.h"
+#include "TextureFiltration.h"
+#include "Object.h"
 
 namespace GL {
 
