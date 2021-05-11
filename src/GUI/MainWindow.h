@@ -19,6 +19,8 @@ private:
 
     std::unique_ptr<Scene> scene;
     Clock::time_point   lastFrame = Clock::time_point::max();
+
+    bool prevFocused = false;
 };
 
 } // namespace GUI

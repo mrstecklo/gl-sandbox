@@ -41,6 +41,8 @@ public:
 
     void SetCursorPos(double x, double y)                     { glfwSetCursorPos(handle, x, y); }
 
+    bool IsFocused() const { return glfwGetWindowAttrib(handle, GLFW_FOCUSED) != 0;}
+
     void Render();
 
 

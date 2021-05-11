@@ -13,14 +13,18 @@ void Scene::InitImpl()
 
     using namespace Resource;
 
-    cube = resources.CreateModel(V_CUBE, T_TEMPLATE, P_GENERIC);
+    scube = resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
+    cube = resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
     triangle = resources.CreateModel(V_TRIANGLE, T_TEMPLATE, P_GENERIC);
 
-    triangle.SetPosition(glm::vec3(0.f,0.f, 0.f));
+    triangle.SetPosition(glm::vec3(0.f,0.f, 2.f));
 
     camera.FPLookAt(
-        glm::vec3(5.f, 2.f, -10.f),
+        glm::vec3(5.f, 2.f, 10.f),
         glm::vec3(0.f, 0.f, 0.f));
+
+    cube.SetPosition(glm::vec3(3.f, 0.f, 0.f));
+    //cube.SetRotation(glm::normalize(glm::quat(1.f, 0.5f, 0.f, 0.f)));
 
     SetMouseMode(GUI::MouseMode::CENTERED);
 }
@@ -41,14 +45,23 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
 	const auto nutation   = mouseUnit * static_cast<float>(cursor.y);
 
     camera.FPRotate(precession, nutation);
+    //camera.Rotate(glm::quat(1.f, 0.f, precession, 0.f));
+    //camera.MSRotate(glm::quat(1.f, nutation, 0.f, 0.f));
 
-    triangle.Rotate(glm::quat(1.f, 0.f, mouseUnit * 0.1f, mouseUnit * 0.1f));
+    //triangle.Rotate(glm::quat(1.f, 0.f, mouseUnit * 0.1f, 0.f));
 
+    triangle.FPRotate(mouseUnit * 0.1f, 0.f);
+
+    //cube.FPLookAt(camera.GetPosition());
+
+    cube.Rotate(glm::quat(1.f, 0.f, mouseUnit * 0.1f, 0.f));
+    cube.MSRotate(glm::quat(1.f, 0.f, 0.f, mouseUnit * 0.5f));
 
     const auto keyboardUnit = microseconds * speed;
 
     auto forward = keyboardUnit * camera.GetDirection();
     auto right = keyboardUnit * camera.GetRight();
+    auto up = keyboardUnit * camera.GetUp();
 
     if(GetWindow()->GetKey(GLFW_KEY_UP) == GLFW::PRESS) {
         camera.Translate(forward);
@@ -65,17 +78,27 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
     if(GetWindow()->GetKey(GLFW_KEY_LEFT) == GLFW::PRESS) {
         camera.Translate(-right);
     }
+
+    if(GetWindow()->GetKey(GLFW_KEY_KP_ADD) == GLFW::PRESS) {
+        camera.Translate(up);
+    }
+
+    if(GetWindow()->GetKey(GLFW_KEY_KP_SUBTRACT) == GLFW::PRESS) {
+        camera.Translate(-up);
+    }
 }
 
 void Scene::ForEachObjectImpl(ObjectCb cb) const
 {
     cb(cube);
+    cb(scube);
     cb(triangle);
 }
 
 void Scene::ForEachModelImpl(ModelCb cb) const
 {
     cb(cube);
+    cb(scube);
     cb(triangle);
 }
 

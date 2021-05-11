@@ -26,6 +26,8 @@ private:
 
     ResourceManager resources;
 
+
+    GUI::Model scube;
     GUI::Model cube;
     GUI::Model triangle;
 

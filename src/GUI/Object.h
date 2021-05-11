@@ -19,7 +19,9 @@ public:
 
     void Translate(const glm::vec3& p) { position += p; }
 
-    void Rotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
+    void Rotate(const glm::quat& r) { rotation = glm::normalize(rotation * r); }
+    // rotate relative to model space
+    void MSRotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
 
     // rotates object keeping its Y as close to global Y as possible (just like first-player camera)
     // resulting nutation is clamped to [-pi / 2; pi / 2]

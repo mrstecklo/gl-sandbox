@@ -17,6 +17,7 @@ enum Vertices : int {
 enum Texture : int {
     T_INVALID,
     T_TEMPLATE,
+    T_AXIS,
 
     T_NUM_RESOURCES
 };

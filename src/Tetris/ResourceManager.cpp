@@ -251,6 +251,8 @@ GL::Texture2D ResourceManager::LoadTexture(int idx, uint32_t* mipmapCount)
     switch(idx) {
     case T_TEMPLATE:
         return Image::Load("cube", mipmapCount, nullptr);
+    case T_AXIS:
+        return Image::Load("axis.bmp", mipmapCount, nullptr);
     default:
     {
         std::stringstream ss;
@@ -266,7 +268,7 @@ std::shared_ptr<GUI::Program>       ResourceManager::CreateProgram(int idx)
 
     switch(idx) {
     case P_GENERIC:
-        return std::make_shared<GUI::Program>(GL::Program::Create(vertexShader, nullptr, fragmentShader), true);
+        return std::make_shared<GUI::Program>(GL::Program::Create(vertexShader, nullptr, fragmentShader), false);
     default:
     {
         std::stringstream ss;

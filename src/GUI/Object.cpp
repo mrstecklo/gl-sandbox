@@ -120,7 +120,7 @@ glm::quat Object::FPLookInDirection(const glm::vec3& d)
     }
 }
 
-void Object::FPRotate(float precession, float nutation)
+/* void Object::FPRotate(float precession, float nutation)
 {
     const auto cosAlpha = sqr(rotation.w) + sqr(rotation.y) - sqr(rotation.x) - sqr(rotation.z);
     const auto sinAlpha = 2.f * (rotation.w * rotation.x + rotation.y * rotation.z);
@@ -140,6 +140,39 @@ void Object::FPRotate(float precession, float nutation)
         cosBeta  * cosP - sinBeta  * sinP,
         sinBeta  * cosP + cosBeta  * sinP
     );
+} */
+
+void Object::FPRotate(float precession, float nutation)
+{
+    /* const auto sinP = std::sin(precession);
+    const auto cosP = std::cos(precession);
+
+    const auto sinN = std::sin(nutation);
+    const auto cosN = std::cos(nutation); */
+
+    const auto sinP = precession;
+    const auto cosP = 1.f;
+
+    const auto sinN = nutation;
+    const auto cosN = 1.f;
+
+
+    const auto rot = glm::quat(cosN, sinN, 0.f, 0.f) * rotation * glm::quat(cosP, 0.f, sinP, 0.f);
+
+    rotation = glm::normalize(rot);
+
+    /* const auto cosAlpha = sqr(rotation.w) + sqr(rotation.y) - sqr(rotation.x) - sqr(rotation.z);
+    const auto sinAlpha = 2.f * (rotation.w * rotation.x + rotation.y * rotation.z);
+
+    const auto cosBeta = sqr(rotation.w) + sqr(rotation.x) - sqr(rotation.y) - sqr(rotation.z);
+    const auto sinBeta = 2.f * (rotation.w * rotation.y + rotation.x * rotation.z);
+
+    rotation = FPRotateImpl(
+        cosAlpha,
+        sinAlpha,
+        cosBeta,
+        sinBeta
+    ); */
 }
 
 glm::quat Object::FPRotateImpl(float cosAlpha, float sinAlpha, float cosBeta, float sinBeta)

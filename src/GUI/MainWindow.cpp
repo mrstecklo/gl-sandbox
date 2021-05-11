@@ -49,9 +49,19 @@ void MainWindow::OnRender()
         break;
     case MouseMode::CENTERED:
     {
-        const Util::PointD center {static_cast<double>(window.x / 2), static_cast<double>(window.y / 2)};
-        SetCursorPos(center.x, center.y);
-        mouse -= center;
+        if(IsFocused()) {
+            const Util::PointD center {static_cast<double>(window.x / 2), static_cast<double>(window.y / 2)};
+            SetCursorPos(center.x, center.y);
+            if(prevFocused) {
+                mouse -= center;
+            } else {
+                mouse = {0.0, 0.0};
+            }
+            prevFocused = true;
+        } else {
+            mouse = {0.0, 0.0};
+            prevFocused = false;
+        }
         break;
     }
     default:
