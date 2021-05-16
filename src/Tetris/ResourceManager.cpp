@@ -5,7 +5,7 @@
 namespace Tetris {
 
 const GLchar ResourceManager::vertexShader[] =
-"#version 330 core\n"
+"#version 420 core\n"
 "layout(location = 0) in vec3 vertexPosition_modelspace;"
 "layout(location = 1) in vec2 vertexUV;"
 "out vec2 UV;"
@@ -24,7 +24,7 @@ const GLchar ResourceManager::vertexShader[] =
 "}";
 
 const GLchar ResourceManager::fragmentShader[] = 
-"#version 330 core\n"
+"#version 420 core\n"
 "in vec2 UV;"
 "out vec3 color;"
 "uniform sampler2D texSampler;"

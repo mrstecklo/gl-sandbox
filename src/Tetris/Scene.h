@@ -19,7 +19,7 @@ private:
     void ForEachModelImpl(ModelCb cb) const override;
 
     GUI::Camera camera;
-    float       mouseSpeed = 0.000005f;
+    float       mouseSpeed = 0.0000005f;
     float       speed = 0.000005f;
 
     GL::VertexArray arr {nullptr};

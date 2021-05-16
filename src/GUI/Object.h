@@ -59,8 +59,8 @@ private:
 
     static glm::quat FPRotateImpl(float cosAlpha, float sinAlpha, float cosBeta, float sinBeta);
 
-    glm::vec3 position;
-    glm::quat rotation;
+    glm::vec3 position{0.f, 0.f, 0.f};
+    glm::quat rotation{1.f, 0.f, 0.f, 0.f};
 };
 
 } // namespace GUI

@@ -34,9 +34,9 @@ typename ObjectArray<T>::Container ObjectArray<T>::Create(GLsizei n)
 
 template<class T>
 ObjectArray<T>::ObjectArray() :
-    Object(nullptr)
+    Obj(nullptr)
 {
-    T::CreateArray(1, &Access());
+    T::CreateArray(1, &Obj::Access());
 }
 
 template<class T>
@@ -49,7 +49,7 @@ void ObjectArray<T>::Destroy(const GLuint& value)
 template<class T>
 void ObjectArray<T>::Bind() const
 {
-    T::BindImpl(Get());
+    T::BindImpl(Obj::Get());
 }
 
 template<class T>

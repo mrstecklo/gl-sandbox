@@ -28,6 +28,7 @@ public:
     {
         std::swap(valid, other.valid);
         std::swap(index, other.index);
+        return *this;
     }
 private:
     bool valid = false;

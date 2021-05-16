@@ -48,20 +48,34 @@ if(MSVC)
       /NODEFAULTLIB:MSVCRT$<$<NOT:$<CONFIG:Debug>>:D>
    )
 else()
-   target_compile_options(GLApp PRIVATE -Wall)
+   target_compile_options(GLApp PRIVATE
+      -Wall
+      -DGLM_ENABLE_EXPERIMENTAL
+   )
 endif()
 
 add_definitions(
    -DGLEW_STATIC
 )
 
-target_link_directories(GLApp PUBLIC
-   ${GLEW_LIB_DIR}
-   ${GLFW_LIB_DIR}
+find_library(GLFW3_LIB
+   NAMES glfw3 glfw
+   HINTS
+      ${GLFW_LIB_DIR}
+)
+
+find_library(GLEW_LIB
+   NAMES glew32s GLEW
+   HINTS
+      ${GLEW_LIB_DIR}
+)
+
+find_library(OPENGL_LIB
+   NAMES opengl32 OpenGL
 )
 
 target_link_libraries(GLApp
-   opengl32
-   glfw3
-   glew32s
+   ${OPENGL_LIB}
+   ${GLFW3_LIB}
+   ${GLEW_LIB}
 )

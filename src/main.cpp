@@ -26,8 +26,8 @@ int main( void )
 		GUI::MainWindow window(
 			glfw.CreateWindow()
 			.Hint(GLFW::SAMPLES, GLFW::Int(4))
-			.Hint(GLFW::CONTEXT_VERSION_MAJOR, 3)
-			.Hint(GLFW::CONTEXT_VERSION_MINOR, 3)
+			.Hint(GLFW::CONTEXT_VERSION_MAJOR, 4)
+			.Hint(GLFW::CONTEXT_VERSION_MINOR, 2)
 			.Hint(GLFW::OPENGL_FORWARD_COMPAT, true)
 			.Hint(GLFW::OPENGL_PROFILE, GLFW::OPENGL_CORE_PROFILE)
 			.Finalize(1024, 768, "GL Sandbox", nullptr, nullptr),

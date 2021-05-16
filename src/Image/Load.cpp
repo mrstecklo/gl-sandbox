@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include <stdexcept>
 #include <vector>
 #include <cctype>
@@ -165,7 +166,7 @@ GL::Texture2D LoadDDS(const char* path, uint32_t* mipmapCount)
         throw std::runtime_error(ss.str());
     }
 
-    if(strncmp(header.fields.signature, "DDS ", 4) != 0) {
+    if(std::strncmp(header.fields.signature, "DDS ", 4) != 0) {
         std::stringstream ss;
         ss << __func__ << '(' << path << ')' << std::endl
             << "Invalid format signature." << std::endl
@@ -196,23 +197,23 @@ GL::Texture2D LoadDDS(const char* path, uint32_t* mipmapCount)
 
     file.close();
 
-    unsigned int components;
+    //unsigned int components;
     unsigned int blockSize;
     GL::S3TCFormat format;
     switch(header.fields.fourCC) {
     case FOURCC_DXT1:
         format = GL::COMPRESSED_RGBA_S3TC_DXT1_EXT;
-        components = 3;
+        //components = 3;
         blockSize = 8;
         break;
     case FOURCC_DXT3:
         format = GL::COMPRESSED_RGBA_S3TC_DXT3_EXT;
-        components = 4;
+        //components = 4;
         blockSize = 16;
         break;
     case FOURCC_DXT5:
         format = GL::COMPRESSED_RGBA_S3TC_DXT5_EXT;
-        components = 4;
+        //components = 4;
         blockSize = 16;
         break;
     default:
