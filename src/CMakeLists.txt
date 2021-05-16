@@ -70,11 +70,17 @@ find_library(GLEW_LIB
       ${GLEW_LIB_DIR}
 )
 
-find_library(OPENGL_LIB
-   NAMES opengl32 OpenGL
-)
+if(WIN32)
 
-target_link_libraries(GLApp
+set(OPENGL_LIB opengl32)
+
+else()
+
+find_library(OPENGL_LIB OpenGL)
+
+endif()
+
+target_link_libraries(GLApp  
    ${OPENGL_LIB}
    ${GLFW3_LIB}
    ${GLEW_LIB}

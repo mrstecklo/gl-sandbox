@@ -24,7 +24,7 @@ public:
     }
 
     glm::mat4 GetProjectionMat() const { return glm::perspective(FOV, width / height, nearClipping, farClipping); }
-    glm::mat4 GetViewMat() const { return glm::mat4_cast(GetRotation()) * glm::translate(-GetPosition()); }
+    glm::mat4 GetViewMat() const { return glm::mat4_cast(glm::conjugate(GetRotation())) * glm::translate(-GetPosition()); }
 
 private:
     float width = 1.f;

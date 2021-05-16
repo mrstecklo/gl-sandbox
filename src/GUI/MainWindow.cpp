@@ -19,6 +19,8 @@ MainWindow::MainWindow(GLFW::Window&& other, std::unique_ptr<Scene>&& s) :
     }
 
     scene->Init(this);
+
+    SetInputMode(GLFW::CURSOR, scene->GetMouseMode());
 }
 
 MainWindow::~MainWindow()
@@ -34,38 +36,24 @@ void MainWindow::OnResize(int width, int height)
 
 void MainWindow::OnRender()
 {
+    count++;
+
     auto now = Clock::now();
-
     const auto duration = std::chrono::duration_cast<std::chrono::microseconds>((now > lastFrame) ? (now - lastFrame) : Clock::duration(0));
-
     lastFrame = now;
 
     auto mouse = GetCursorPos();
-    const auto window = GetWindowSize();
 
     switch(scene->GetMouseMode()) {
-    case MouseMode::DISABLED:
-        mouse = {0, 0};
-        break;
-    case MouseMode::CENTERED:
+    case GLFW::CURSOR_DISABLED:
     {
-        if(IsFocused()) {
-            const Util::PointD center {static_cast<double>(window.x / 2), static_cast<double>(window.y / 2)};
-            SetCursorPos(center.x, center.y);
-            if(prevFocused) {
-                mouse -= center;
-            } else {
-                mouse = {0.0, 0.0};
-            }
-            prevFocused = true;
-        } else {
+        SetCursorPos(0.0, 0.0);
+        if(count < 3) {
             mouse = {0.0, 0.0};
-            prevFocused = false;
         }
         break;
     }
     default:
-    case MouseMode::FREE:
         break;
     };
 
@@ -82,7 +70,7 @@ void MainWindow::OnRender()
     scene->ForEachModel(
         [&VP, &currentProram](const Model& m)
         {
-            auto MVP = VP * glm::translate(m.GetPosition()) * glm::mat4_cast(glm::inverse(m.GetRotation()));
+            auto MVP = VP * glm::translate(m.GetPosition()) * glm::mat4_cast(m.GetRotation());
             if(currentProram != m.GetProgram()) {
                 currentProram = m.GetProgram();
                 currentProram->Use();

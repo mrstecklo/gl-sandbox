@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "GUI/MainWindow.h"
+#include <iostream>
 
 namespace Tetris {
 
@@ -14,7 +15,9 @@ void Scene::InitImpl()
     using namespace Resource;
 
     scube = resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
-    cube = resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
+    FPLookingCube = lookingCube = cube = scube;//resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
+    
+
     triangle = resources.CreateModel(V_TRIANGLE, T_TEMPLATE, P_GENERIC);
 
     triangle.SetPosition(glm::vec3(0.f,0.f, 2.f));
@@ -24,9 +27,11 @@ void Scene::InitImpl()
         glm::vec3(0.f, 0.f, 0.f));
 
     cube.SetPosition(glm::vec3(3.f, 0.f, 0.f));
-    //cube.SetRotation(glm::normalize(glm::quat(1.f, 0.5f, 0.f, 0.f)));
 
-    SetMouseMode(GUI::MouseMode::CENTERED);
+    lookingCube.SetPosition(glm::vec3(0.f, 0.f, 5.f));
+    FPLookingCube.SetPosition(glm::vec3(3.f, 0.f, 5.f));
+
+    SetMouseMode(GLFW::CURSOR_DISABLED);
 }
 
 void Scene::ResizeImpl(int width, int height)
@@ -41,8 +46,14 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
 
     const auto mouseUnit = microseconds * mouseSpeed;
 
-    const auto precession = mouseUnit * static_cast<float>(cursor.x);
-	const auto nutation   = mouseUnit * static_cast<float>(cursor.y);
+    const auto precession = -mouseUnit * static_cast<float>(cursor.x);
+	const auto nutation   = -mouseUnit * static_cast<float>(cursor.y);
+
+    //std::cout << "cursor: " << cursor.x << 'x' << cursor.y 
+    //    << ", " << (cursor.x - prevCursor.x) << 'x' << (cursor.y - prevCursor.y) << std::endl;
+
+    //prevCursor = cursor;
+    
 
     camera.FPRotate(precession, nutation);
     //camera.Rotate(glm::quat(1.f, 0.f, precession, 0.f));
@@ -50,12 +61,12 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
 
     //triangle.Rotate(glm::quat(1.f, 0.f, mouseUnit * 0.1f, 0.f));
 
-    triangle.FPRotate(mouseUnit * 0.1f, 0.f);
+    triangle.FPRotate(mouseUnit, 0.f);
 
     //cube.FPLookAt(camera.GetPosition());
 
-    cube.Rotate(glm::quat(1.f, 0.f, mouseUnit * 0.1f, 0.f));
-    cube.MSRotate(glm::quat(1.f, 0.f, 0.f, mouseUnit * 0.5f));
+    cube.Rotate(glm::quat(1.f, 0.f, mouseUnit, 0.f));
+    cube.MSRotate(glm::quat(1.f, 0.f, 0.f, mouseUnit * 5.f));
 
     const auto keyboardUnit = microseconds * speed;
 
@@ -86,6 +97,10 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
     if(GetWindow()->GetKey(GLFW_KEY_KP_SUBTRACT) == GLFW::PRESS) {
         camera.Translate(-up);
     }
+
+    lookingCube.LookAt(camera.GetPosition(), glm::vec3(0.f, 1.f, 0.f));
+    FPLookingCube.FPLookAt(camera.GetPosition());
+    
 }
 
 void Scene::ForEachObjectImpl(ObjectCb cb) const
@@ -93,6 +108,8 @@ void Scene::ForEachObjectImpl(ObjectCb cb) const
     cb(cube);
     cb(scube);
     cb(triangle);
+    cb(lookingCube);
+    cb(FPLookingCube);
 }
 
 void Scene::ForEachModelImpl(ModelCb cb) const
@@ -100,6 +117,8 @@ void Scene::ForEachModelImpl(ModelCb cb) const
     cb(cube);
     cb(scube);
     cb(triangle);
+    cb(lookingCube);
+    cb(FPLookingCube);
 }
 
 } // namespace Tetris

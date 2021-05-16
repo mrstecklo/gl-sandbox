@@ -10,12 +10,6 @@
 
 namespace GUI {
 
-enum class MouseMode {
-    DISABLED,
-    CENTERED,
-    FREE
-};
-
 class Scene {
 public:
     using ObjectCb = std::function<void(const Object&)>;
@@ -30,14 +24,14 @@ public:
     void ForEachObject(ObjectCb cb) const { return ForEachObjectImpl(cb); }
     void ForEachModel(ModelCb cb) const { return ForEachModelImpl(cb); }
 
-    MouseMode GetMouseMode() const { return mouseMode; }
+    GLFW::CursorInputModeValue GetMouseMode() const { return mouseMode; }
 
     Scene() = default;
     virtual ~Scene() = default;
 
 protected:
     
-    void SetMouseMode(MouseMode m) { mouseMode = m; }
+    void SetMouseMode(GLFW::CursorInputModeValue m) { mouseMode = m; }
     const MainWindow* GetWindow() const { return window; }
 
 private:
@@ -50,7 +44,7 @@ private:
     virtual void ForEachModelImpl(ModelCb cb) const = 0;
 
     const MainWindow* window = nullptr;
-    MouseMode mouseMode = MouseMode::FREE;
+    GLFW::CursorInputModeValue mouseMode = GLFW::CURSOR_NORMAL;
 };
 
 } // namespace GUI

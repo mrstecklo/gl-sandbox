@@ -19,13 +19,14 @@ public:
 
     void Translate(const glm::vec3& p) { position += p; }
 
-    void Rotate(const glm::quat& r) { rotation = glm::normalize(rotation * r); }
+    void Rotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
     // rotate relative to model space
-    void MSRotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
+    void MSRotate(const glm::quat& r) { rotation = glm::normalize(rotation * r); }
 
     // rotates object keeping its Y as close to global Y as possible (just like first-player camera)
     // resulting nutation is clamped to [-pi / 2; pi / 2]
     void FPRotate(float precession, float nutation);
+    static glm::quat FPRotate(const glm::quat& init, float precession, float nutation);
 
     // sets rotation = LookInDirection(eye - position, up)
     void LookAt(const glm::vec3& eye, const glm::vec3& up);
@@ -40,12 +41,19 @@ public:
     const glm::vec3& GetPosition() const { return position; }
     const glm::quat& GetRotation() const { return rotation; }
 
-    // returns objects -Z direction
-    glm::vec3 GetDirection() const;
-    // returns objects +X direction
-    glm::vec3 GetRight() const;
-    // returns objects +Y direction
-    glm::vec3 GetUp() const;
+    // returns object's -Z direction
+    glm::vec3 GetDirection() const { return GetDirection(rotation); }
+    // returns object's +X direction
+    glm::vec3 GetRight() const { return GetRight(rotation); }
+    // returns object's +Y direction
+    glm::vec3 GetUp() const { return GetUp(rotation); }
+
+    // returns r * {0, 0, -1}
+    static glm::vec3 GetDirection(const glm::quat& r);
+    // returns r * {1, 0, 0}
+    static glm::vec3 GetRight(const glm::quat& r);
+    // returns r * {0, 1, 0}
+    static glm::vec3 GetUp(const glm::quat& r);
 
     // return quaternion that turns object's -Z to dir and Y to cross(dir, cross(up, dir))
     static glm::quat LookInDirection(const glm::vec3& dir, const glm::vec3& up);
