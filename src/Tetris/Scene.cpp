@@ -14,10 +14,7 @@ void Scene::InitImpl()
 
     using namespace Resource;
 
-    scube = resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
-    FPLookingCube = lookingCube = cube = scube;//resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
-    
-
+    FPLookingCube = lookingCube = cube = scube = resources.CreateModel(V_CUBE, T_AXIS, P_GENERIC);
     triangle = resources.CreateModel(V_TRIANGLE, T_TEMPLATE, P_GENERIC);
 
     triangle.SetPosition(glm::vec3(0.f,0.f, 2.f));
