@@ -20,6 +20,7 @@ add_executable(GLApp
    GUI/MainWindow.cpp
    GUI/Object.cpp
 
+   Tetris/Map.cpp
    Tetris/Scene.cpp
    Tetris/ResourceManager.cpp
 )
