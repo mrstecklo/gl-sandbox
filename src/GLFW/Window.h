@@ -29,6 +29,7 @@ public:
     KeyState GetKey(int key)                            const { return static_cast<KeyState>(glfwGetKey(handle, key)); }
 
     bool ShouldClose()                                  const { return glfwWindowShouldClose(handle) != 0; }
+    void SetShouldClose(bool value)                     const { glfwSetWindowShouldClose(handle, value ? 1 : 0); }
 
     void GetWindowSize(int* width, int* height)         const { glfwGetWindowSize(handle, width, height); }
     Util::Point GetWindowSize()                         const { Util::Point s; GetWindowSize(&s.x, &s.y); return s; }

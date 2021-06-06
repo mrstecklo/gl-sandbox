@@ -21,8 +21,8 @@ public:
     void ProcessInput(const Util::PointD& cursor, std::chrono::microseconds timeSinceLastFrame) { ProcessInputImpl(cursor, timeSinceLastFrame); }
 
     const Camera& GetCamera() const { return GetCameraImpl(); }
-    void ForEachObject(ObjectCb cb) const { return ForEachObjectImpl(cb); }
-    void ForEachModel(ModelCb cb) const { return ForEachModelImpl(cb); }
+    void ForEachObject(ObjectCb cb) { ForEachModel(cb); }
+    void ForEachModel(ModelCb cb) { ForEachModelImpl(cb); }
 
     GLFW::CursorInputModeValue GetMouseMode() const { return mouseMode; }
 
@@ -40,8 +40,7 @@ private:
     virtual void ProcessInputImpl(const Util::PointD& cursor, std::chrono::microseconds timeSinceLastFrame) = 0;
 
     virtual const Camera& GetCameraImpl() const = 0;
-    virtual void ForEachObjectImpl(ObjectCb cb) const = 0;
-    virtual void ForEachModelImpl(ModelCb cb) const = 0;
+    virtual void ForEachModelImpl(ModelCb cb) = 0;
 
     const MainWindow* window = nullptr;
     GLFW::CursorInputModeValue mouseMode = GLFW::CURSOR_NORMAL;

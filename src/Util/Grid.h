@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Point.h"
+
 #include <vector>
+#include <utility>
 
 namespace Util {
 
@@ -49,7 +52,7 @@ public:
     Grid& operator=(Grid&& other)
     {
         Base::operator=(std::move(other));
-        std::swap(xsize, other.xsize)
+        std::swap(xsize, other.xsize);
         return *this;
     }
 
@@ -60,6 +63,9 @@ public:
 
     size_type width() const { return xsize; }
     size_type height() const { return (xsize > 0) ? (size() / xsize) : 0; }
+
+    reference       operator[](const Point& p)       { return operator[](p.y)[p.x]; }
+    const_reference operator[](const Point& p) const { return operator[](p.y)[p.x]; }
 
     Row<T>      operator[](size_type i);
     ConstRow<T> operator[](size_type i) const;
@@ -115,13 +121,13 @@ template<class T>
 class ConstRow : private Row<T> {
 public:
     using Base = Row<T>;
-    using Base::value_type;
-    using Base::size_type;
-    using Base::difference_type;
-    using Base::reference;
-    using Base::const_reference;
-    using Base::pointer;
-    using Base::const_pointer;
+    using typename Base::value_type;
+    using typename Base::size_type;
+    using typename Base::difference_type;
+    using typename Base::reference;
+    using typename Base::const_reference;
+    using typename Base::pointer;
+    using typename Base::const_pointer;
     
     constexpr ConstRow(const_pointer ptr, size_type size) :
         Base(const_cast<pointer>(ptr), size) {}
@@ -140,12 +146,12 @@ public:
     constexpr ConstRow  operator++(int) { return Base::operator++(0); }
     constexpr ConstRow  operator--(int) { return Base::operator--(0); }
 
-    constexpr ConstRow& operator+=(size_type i) { return Base::operator+=(i); }
-    constexpr ConstRow& operator-=(size_type i) { return Base::operator-=(i); }
+    constexpr ConstRow& operator+=(size_type i) { Base::operator+=(i); return *this; }
+    constexpr ConstRow& operator-=(size_type i) { Base::operator-=(i); return *this; }
 
-    friend constexpr ConstRow operator+(Row<T> r, size_type i) { r += i; return r; }
-    friend constexpr ConstRow operator+(size_type i, const Row<T>& r) { return r + i; } 
-    friend constexpr ConstRow operator-(Row<T> r, size_type i) { r -= i; return r; }
+    friend constexpr ConstRow operator+(ConstRow<T> r, size_type i) { r += i; return r; }
+    friend constexpr ConstRow operator+(size_type i, const ConstRow<T>& r) { return r + i; } 
+    friend constexpr ConstRow operator-(ConstRow<T> r, size_type i) { r -= i; return r; }
 
     friend constexpr bool operator<(const ConstRow& r, const ConstRow& l) { return r.data() < l.data(); }
     friend constexpr bool operator>(const ConstRow& r, const ConstRow& l) { return l < r; }
@@ -154,8 +160,8 @@ public:
 };
 
 template<class T, class A>
-Row<T> Grid<T, A>::operator[](size_type i) { return Row(data(), xsize) + i; }
+Row<T> Grid<T, A>::operator[](size_type i) { return Row<T>(data(), xsize) + i; }
 template<class T, class A>
-ConstRow<T> Grid<T, A>::operator[](size_type i) const { return ConstRow(data(), xsize) + i; }
+ConstRow<T> Grid<T, A>::operator[](size_type i) const { return ConstRow<T>(data(), xsize) + i; }
 
 } // namespace Util

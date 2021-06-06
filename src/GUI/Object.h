@@ -15,13 +15,18 @@ public:
     {}
 
     void SetPosition(const glm::vec3& p) { position = p; }
+    void SetPosition(float x, float y, float z) { SetPosition(glm::vec3(x, y, z)); }
     void SetRotation(const glm::quat& r) { rotation = r; }
+    void SetRotation(float w, float x, float y, float z) { SetRotation(glm::quat(w, x, y, z)); }
 
     void Translate(const glm::vec3& p) { position += p; }
+    void Translate(float x, float y, float z) { Translate(glm::vec3(x, y, z)); }
 
     void Rotate(const glm::quat& r) { rotation = glm::normalize(r * rotation); }
+    void Rotate(float w, float x, float y, float z) { Rotate(glm::quat(w, x, y, z)); }
     // rotate relative to model space
     void MSRotate(const glm::quat& r) { rotation = glm::normalize(rotation * r); }
+    void MSRotate(float w, float x, float y, float z) { MSRotate(glm::quat(w, x, y, z)); }
 
     // rotates object keeping its Y as close to global Y as possible (just like first-player camera)
     // resulting nutation is clamped to [-pi / 2; pi / 2]

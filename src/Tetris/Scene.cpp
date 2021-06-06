@@ -4,6 +4,13 @@
 
 namespace Tetris {
 
+constexpr std::chrono::microseconds Scene::tickDuration;
+
+Scene::Scene() :
+    map(width, height)
+{
+}
+
 void Scene::InitImpl()
 {
     GL::ClearColor(0.0f, 0.0f, 0.3f, 0.0f);
@@ -23,7 +30,7 @@ void Scene::InitImpl()
         glm::vec3(5.f, 2.f, 10.f),
         glm::vec3(0.f, 0.f, 0.f));
 
-    cube.SetPosition(glm::vec3(3.f, 0.f, 0.f));
+    //cube.SetPosition(glm::vec3(3.f, 0.f, 0.f));
 
     lookingCube.SetPosition(glm::vec3(0.f, 0.f, 5.f));
     FPLookingCube.SetPosition(glm::vec3(3.f, 0.f, 5.f));
@@ -39,6 +46,17 @@ void Scene::ResizeImpl(int width, int height)
 
 void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microseconds timeSinceLastFrame)
 {
+    if(GetWindow()->GetKey(GLFW_KEY_ESCAPE) == GLFW::PRESS) {
+        GetWindow()->SetShouldClose(true);
+        return;
+    }
+
+    counter += timeSinceLastFrame;
+    if(counter >= tickDuration) {
+        counter %= tickDuration;
+        map.Tick(Map::Input::NIL);
+    }
+
     const auto microseconds = static_cast<float>(timeSinceLastFrame.count());
 
     const auto mouseUnit = microseconds * mouseSpeed;
@@ -62,8 +80,8 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
 
     //cube.FPLookAt(camera.GetPosition());
 
-    cube.Rotate(glm::quat(1.f, 0.f, mouseUnit, 0.f));
-    cube.MSRotate(glm::quat(1.f, 0.f, 0.f, mouseUnit * 5.f));
+    //cube.Rotate(glm::quat(1.f, 0.f, mouseUnit, 0.f));
+    //cube.MSRotate(glm::quat(1.f, 0.f, 0.f, mouseUnit * 5.f));
 
     const auto keyboardUnit = microseconds * speed;
 
@@ -100,18 +118,33 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
     
 }
 
-void Scene::ForEachObjectImpl(ObjectCb cb) const
+void Scene::ForEachModelImpl(ModelCb cb)
 {
-    cb(cube);
-    cb(scube);
-    cb(triangle);
-    cb(lookingCube);
-    cb(FPLookingCube);
-}
+    auto& grid = map.GetGrid();
 
-void Scene::ForEachModelImpl(ModelCb cb) const
-{
-    cb(cube);
+    static glm::vec3 mapBase(0.f, 0.f, -10.f);
+    static float step = 2.5f;
+    
+    for(std::size_t j = 0; j < grid.height(); ++j) {
+        auto row = grid[j];
+        for(std::size_t i = 0; i < grid.width(); ++i) {
+            if(row[i] != 0) {
+                const auto pos = mapBase + glm::vec3(step * i, step * j, 0.f);
+                cube.SetPosition(pos);
+                cb(cube);
+            }
+        }
+    }
+
+    auto& figure = map.GetFigure();
+
+    for(std::size_t i = 0; i < Figure::tetra; ++i) {
+        const auto p = figure[i];
+        const auto pos = mapBase + glm::vec3(step * p.x, step * p.y, 0.f);
+        cube.SetPosition(pos);
+        cb(cube);
+    }
+
     cb(scube);
     cb(triangle);
     cb(lookingCube);

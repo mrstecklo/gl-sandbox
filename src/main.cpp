@@ -38,7 +38,7 @@ int main( void )
 			throw std::runtime_error("Failed to open GLFW window");
 		}
 
-		window.SetInputMode(GLFW::STICKY_KEYS, true);
+		//window.SetInputMode(GLFW::STICKY_KEYS, true);
 
 		GL::Debug::Enable();
 		GL::Debug::RegisterCallback(MessageCallback, 0);
@@ -46,7 +46,7 @@ int main( void )
 		do {
 			window.Render();
 			glfw.PollEvents();
-		} while( window.GetKey(GLFW_KEY_ESCAPE) != GLFW::PRESS && !window.ShouldClose());
+		} while(!window.ShouldClose());
 
 		
 	} catch (const std::exception& e) {

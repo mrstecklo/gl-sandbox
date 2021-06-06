@@ -1,12 +1,13 @@
 #include "GUI/Scene.h"
 #include "GLCPP/VertexArray.h"
 #include "ResourceManager.h"
+#include "Map.h"
 
 namespace Tetris {
 
 class Scene : public GUI::Scene {
 public:
-    Scene() = default;
+    Scene();
     ~Scene() override = default;
 
 private:
@@ -15,8 +16,8 @@ private:
     void ProcessInputImpl(const Util::PointD& cursor, std::chrono::microseconds timeSinceLastFrame) override;
 
     const GUI::Camera& GetCameraImpl() const override { return camera; }
-    void ForEachObjectImpl(ObjectCb cb) const override;
-    void ForEachModelImpl(ModelCb cb) const override;
+
+    void ForEachModelImpl(ModelCb cb) override;
 
     GUI::Camera camera;
     float       mouseSpeed = 0.00000005f;
@@ -32,6 +33,14 @@ private:
 
     GUI::Model lookingCube;
     GUI::Model FPLookingCube;
+
+    Map        map;
+
+    std::chrono::microseconds counter {0};
+
+    static constexpr std::size_t width = 10;
+    static constexpr std::size_t height = 20;
+    static constexpr std::chrono::microseconds tickDuration { 500000 };
 };
 
 } // namespace Tetris

@@ -1,5 +1,6 @@
 #include "Map.h"
 
+#include <iostream>
 
 namespace Tetris {
 
@@ -42,6 +43,113 @@ Figure Map::Spawn()
 {
     static std::uniform_int_distribution<> type_dist(0, Figure::NUM_TYPES - 1);
     static std::uniform_int_distribution<> rotation_dist(0, Figure::NUM_ROTATIONS - 1);
+
+    const auto type = static_cast<Figure::Type>(type_dist(gen));
+    const auto rotation = static_cast<Figure::Rotation>(rotation_dist(gen));
+    const Util::Point position {static_cast<int>(grid.width() / 2), 0};
+
+    return Figure(position, type, rotation);
+}
+
+void Map::Tick(Input in)
+{
+    std::cout << "Tick ";
+    switch(state) {
+    case State::INIT:
+        std::cout << "init";
+        figure = Spawn();
+        state = DoesFigureCollide() ? State::END : State::FIGURE;
+        break;
+    case State::FIGURE:
+        std::cout << "figure";
+        MoveFigure(in);
+        break;
+    default:
+    case State::END:
+        std::cout << "end";
+        break;
+    }
+    std::cout << '\n';
+}
+
+void Map::MoveFigure(Input in)
+{
+    const auto temp = figure;
+
+    switch(in) {
+    case Input::NIL:
+    case Input::DOWN:
+        figure.MoveDown();
+        break;
+    case Input::RIGHT:
+        figure.MoveRight();
+        break;
+    case Input::LEFT:
+        figure.MoveLeft();
+        break;
+    case Input::ROTATE:
+        figure.RotateClockwise();
+        break;
+    }
+
+    if(!IsFigureValid()) {
+        figure = temp;
+        switch (in) {
+        case Input::NIL:
+        case Input::DOWN:
+            ToInitState();
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+bool Map::IsFigureValid()
+{
+    for(std::size_t i = 0; i < Figure::tetra; i++) {
+        const auto p = figure[i];
+        if(IsPointOutside(p) || DoesPointCollide(p)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Map::DoesFigureCollide()
+{
+    for(std::size_t i = 0; i < Figure::tetra; i++) {
+        const auto p = figure[i];
+        if(DoesPointCollide(p)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Map::IsPointOutside(const Util::Point& p)
+{
+    return
+        p.x < 0 || p.x >= static_cast<int>(grid.width()) ||
+        p.y < 0 || p.y >= static_cast<int>(grid.height());
+}
+
+bool Map::DoesPointCollide(const Util::Point& p)
+{
+    if(IsPointOutside(p)) {
+        return false;
+    } else {
+        return grid[p] != 0;
+    }
+}
+
+void Map::ToInitState()
+{
+    for(std::size_t i = 0; i < Figure::tetra; i++) {
+        const auto p = figure[i];
+        grid[p] = 1;
+    }
+    state = State::INIT;
 }
 
 } // namespace Tetris
