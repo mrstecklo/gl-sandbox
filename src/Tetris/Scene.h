@@ -17,7 +17,7 @@ private:
 
     const GUI::Camera& GetCameraImpl() const override { return camera; }
 
-    void ForEachModelImpl(ModelCb cb) override;
+    void ForEachModelImpl(ModelCb cb) const override;
 
     GUI::Camera camera;
     float       mouseSpeed = 0.00000005f;
@@ -28,7 +28,7 @@ private:
     ResourceManager resources;
 
     GUI::Model scube;
-    GUI::Model cube;
+    mutable GUI::Model cube;
     GUI::Model triangle;
 
     GUI::Model lookingCube;

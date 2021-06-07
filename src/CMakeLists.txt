@@ -23,6 +23,7 @@ add_executable(GLApp
    Tetris/Map.cpp
    Tetris/Scene.cpp
    Tetris/ResourceManager.cpp
+   Tetris/Visualisation.cpp
 )
 
 target_include_directories(GLApp PUBLIC

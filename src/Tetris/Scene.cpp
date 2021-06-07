@@ -118,7 +118,7 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
     
 }
 
-void Scene::ForEachModelImpl(ModelCb cb)
+void Scene::ForEachModelImpl(ModelCb cb) const
 {
     auto& grid = map.GetGrid();
 

@@ -13,6 +13,15 @@ class Row;
 template<class T>
 class ConstRow;
 
+template<class RowType>
+class GridIteratorBase;
+
+template<class T>
+using GridIterator = GridIteratorBase<Row<T> >;
+
+template<class T>
+using GridConstIterator = GridIteratorBase<ConstRow<T> >;
+
 template<class T, class Allocator = std::allocator<T> >
 class Grid : private std::vector<T, Allocator> {
 public:
@@ -25,6 +34,9 @@ public:
     using typename Base::const_reference;
     using typename Base::pointer;
     using typename Base::const_pointer;
+
+    using Iterator = GridIterator<T>;
+    using ConstIterator = GridConstIterator<T>;
 
     Grid() = default;
 
@@ -70,11 +82,11 @@ public:
     Row<T>      operator[](size_type i);
     ConstRow<T> operator[](size_type i) const;
 
-    Row<T>      begin()       {return operator[](0); }
-    ConstRow<T> begin() const {return operator[](0); }
+    Iterator      begin()       {return Iteraror(operator[](0)); }
+    ConstIterator begin() const {return ConstIterator(operator[](0)); }
 
-    Row<T>      end()       {return operator[](xsize); }
-    ConstRow<T> end() const {return operator[](xsize); }
+    Iterator      end()       {return Iterator(operator[](xsize)); }
+    ConstIterator end() const {return ConstIterator(operator[](xsize)); }
  
 private:
     size_type xsize = 0;
@@ -108,9 +120,9 @@ public:
     constexpr Row& operator+=(size_type i) { p += i * s; return *this; }
     constexpr Row& operator-=(size_type i) { p -= i * s; return *this; }
 
-    friend constexpr Row operator+(Row<T> r, size_type i) { r += i; return r; }
-    friend constexpr Row operator+(size_type i, const Row<T>& r) { return r + i; } 
-    friend constexpr Row operator-(Row<T> r, size_type i) { r -= i; return r; }
+    friend constexpr Row operator+(Row r, size_type i) { r += i; return r; }
+    friend constexpr Row operator+(size_type i, const Row& r) { return r + i; } 
+    friend constexpr Row operator-(Row r, size_type i) { r -= i; return r; }
 
 private:
     pointer         p;
@@ -141,27 +153,72 @@ public:
     constexpr const_pointer begin() const { return Base::begin(); }
     constexpr const_pointer end()   const { return Base::end(); }
     
-    constexpr ConstRow& operator++() { return Base::operator++(); }
-    constexpr ConstRow& operator--() { return Base::operator--(); }
+    constexpr ConstRow& operator++() { Base::operator++(); return *this; }
+    constexpr ConstRow& operator--() { Base::operator--(); return *this; }
     constexpr ConstRow  operator++(int) { return Base::operator++(0); }
     constexpr ConstRow  operator--(int) { return Base::operator--(0); }
 
     constexpr ConstRow& operator+=(size_type i) { Base::operator+=(i); return *this; }
     constexpr ConstRow& operator-=(size_type i) { Base::operator-=(i); return *this; }
 
-    friend constexpr ConstRow operator+(ConstRow<T> r, size_type i) { r += i; return r; }
-    friend constexpr ConstRow operator+(size_type i, const ConstRow<T>& r) { return r + i; } 
-    friend constexpr ConstRow operator-(ConstRow<T> r, size_type i) { r -= i; return r; }
+    friend constexpr ConstRow operator+(ConstRow r, size_type i) { r += i; return r; }
+    friend constexpr ConstRow operator+(size_type i, const ConstRow& r) { return r + i; } 
+    friend constexpr ConstRow operator-(ConstRow r, size_type i) { r -= i; return r; }
 
     friend constexpr bool operator<(const ConstRow& r, const ConstRow& l) { return r.data() < l.data(); }
     friend constexpr bool operator>(const ConstRow& r, const ConstRow& l) { return l < r; }
     friend constexpr bool operator<=(const ConstRow& r, const ConstRow& l) { return !(r > l); }
     friend constexpr bool operator>=(const ConstRow& r, const ConstRow& l) { return !(r < l); }
+
+    friend constexpr bool operator==(const ConstRow& r, const ConstRow& l) { return r.data() == l.data(); }
+    friend constexpr bool operator!=(const ConstRow& r, const ConstRow& l) { return !(r == l); }
 };
 
 template<class T, class A>
 Row<T> Grid<T, A>::operator[](size_type i) { return Row<T>(data(), xsize) + i; }
 template<class T, class A>
 ConstRow<T> Grid<T, A>::operator[](size_type i) const { return ConstRow<T>(data(), xsize) + i; }
+
+template<class RowType>
+class GridIteratorBase {
+public:
+
+    using size_type = typename RowType::size_type;
+    
+    constexpr explicit GridIteratorBase(const RowType& r) :
+        impl(r)
+    {}
+
+    template<class OtherRowType>
+    constexpr GridIteratorBase(const GridIteratorBase<OtherRowType>& other) :
+        impl(other.impl)
+    {}
+
+    constexpr const RowType& operator*() const { return impl; }
+
+    constexpr GridIteratorBase& operator++() { ++impl; return *this; }
+    constexpr GridIteratorBase& operator--() { --impl; return *this; }
+    constexpr GridIteratorBase  operator++(int) { return GridIterarorBase(impl++); }
+    constexpr GridIteratorBase  operator--(int) { return GridIterarorBase(impl--); }
+
+    constexpr GridIteratorBase& operator+=(size_type i) { impl += i; return *this; }
+    constexpr GridIteratorBase& operator-=(size_type i) { impl -= i; return *this; }
+
+    friend constexpr GridIteratorBase operator+(GridIteratorBase r, size_type i) { r += i; return r; }
+    friend constexpr GridIteratorBase operator+(size_type i, const GridIteratorBase& r) { return r + i; } 
+    friend constexpr GridIteratorBase operator-(GridIteratorBase r, size_type i) { r -= i; return r; }
+
+    friend constexpr bool operator<(const GridIteratorBase& r, const GridIteratorBase& l) { return r.impl < l.impl; }
+    friend constexpr bool operator>(const GridIteratorBase& r, const GridIteratorBase& l) { return l < r; }
+    friend constexpr bool operator<=(const GridIteratorBase& r, const GridIteratorBase& l) { return !(r > l); }
+    friend constexpr bool operator>=(const GridIteratorBase& r, const GridIteratorBase& l) { return !(r < l); }
+
+    friend constexpr bool operator==(const GridIteratorBase& r, const GridIteratorBase& l) { return r.impl == l.impl; }
+    friend constexpr bool operator!=(const GridIteratorBase& r, const GridIteratorBase& l) { return !(r == l); }
+
+
+private:
+    RowType impl;
+};
 
 } // namespace Util

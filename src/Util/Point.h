@@ -7,14 +7,14 @@ struct PointT {
     T x;
     T y;
 
-    bool operator==(const PointT<T>& r) const { return x == r.x && y == r.y; }
-    bool operator!=(const PointT<T>& r) const { return !(*this == r); }
+    constexpr bool operator==(const PointT& r) const { return x == r.x && y == r.y; }
+    constexpr bool operator!=(const PointT& r) const { return !(*this == r); }
 
-    const PointT operator+(const PointT<T>& r) const { return {x + r.x, y + r.y}; }
-    const PointT operator-(const PointT<T>& r) const { return {x - r.x, y - r.y}; }
+    constexpr PointT& operator+=(const PointT& r) { x += r.x; y += r.y; return *this; }
+    constexpr PointT& operator-=(const PointT& r) { x -= r.x; y -= r.y; return *this; }
 
-    PointT& operator+=(const PointT<T>& r) { x += r.x; y += r.y; return *this; }
-    PointT& operator-=(const PointT<T>& r) { x -= r.x; y -= r.y; return *this; }
+    friend constexpr const PointT operator+(PointT r, const PointT& l) { r += l; return r; }
+    friend constexpr const PointT operator-(PointT r, const PointT& l) { r -= l; return r; }
 };
 
 using Point = PointT<int>;
