@@ -98,15 +98,39 @@ private:
 
 constexpr Util::Point FigureConstIterator::operator*() { return (*parent)[idx]; }
 
+class Grid {
+public:
+
+    Grid(std::size_t width, std::size_t height) :
+        flags(width, height) {}
+
+    virtual ~Grid() = default;
+
+    void Set(const Util::Point& p, bool value)
+    {
+        flags[p] = value ? 1 : 0;
+        SetImpl(p, value);
+    }
+
+    bool Check(const Util::Point& p) const { return flags[p] != 0; }
+
+    std::size_t width() const { return flags.width(); }
+    std::size_t height() const { return flags.height(); }
+
+protected:
+    virtual void SetImpl(const Util::Point& p, bool value) {}
+
+private:
+    Util::Grid<int> flags;
+};
+
 class Map {
 public:
-    using Container = Util::Grid<int>;
-
-    Map(std::size_t width, std::size_t height) :
-        grid(width, height),
+    Map(Grid& g) :
+        grid(g),
         gen(std::random_device()())
     {
-        if(width > std::numeric_limits<int>::max() || height > std::numeric_limits<int>::max()) {
+        if(grid.width() > std::numeric_limits<int>::max() || grid.height() > std::numeric_limits<int>::max()) {
             throw std::runtime_error("Map::Map. Dimensions are too big");
         }
     }
@@ -128,7 +152,6 @@ public:
     void Tick(Input in);
     State GetState() const { return state; }
 
-    const Container& GetGrid() const { return grid; }
     const Figure& GetFigure() const { return figure; }
 
 
@@ -141,7 +164,7 @@ private:
     bool DoesPointCollide(const Util::Point& p);
     void ToInitState();
 
-    Container       grid;
+    Grid&           grid;
     std::mt19937    gen;
     State           state = State::INIT;
     Figure          figure{ {0,0}, Figure::Type::O };

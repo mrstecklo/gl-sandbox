@@ -12,23 +12,18 @@ Visualisation::Visualisation(std::size_t width, std::size_t height, std::chrono:
 
 void Visualisation::Proceed(std::chrono::microseconds delta, Map::Input in)
 {
-    if(in != Map::Input::NIL) {
-        lastInput = in;
-    }
-
     counter += delta;
-    if(counter >= tick) {
-        counter %= tick;
-        map.Tick(lastInput);
-        lastInput = Map::Input::NIL;
+    if(counter >= tick || in != Map::Input::NIL) {
+        map.Tick(in);
     }
+    counter %= tick;
 
     auto& grid = map.GetGrid();
 
     static glm::vec3 mapBase(0.f, 0.f, -10.f);
     static float step = 2.5f;
     
-    /* for(std::size_t j = 0; j < grid.height(); ++j) {
+    for(std::size_t j = 0; j < grid.height(); ++j) {
         auto row = grid[j];
         for(std::size_t i = 0; i < grid.width(); ++i) {
             if(row[i] != 0) {
@@ -37,7 +32,7 @@ void Visualisation::Proceed(std::chrono::microseconds delta, Map::Input in)
                 cb(cube);
             }
         }
-    } */
+    }
 }
 
 void Visualisation::ForEachModel(std::function<void(const GUI::Model&)> cb) const

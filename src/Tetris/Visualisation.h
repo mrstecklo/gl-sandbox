@@ -23,7 +23,6 @@ private:
     Util::Grid<GUI::Model>      models;
     std::chrono::microseconds   tick;
     std::chrono::microseconds   counter {0};
-    Map::Input                  lastInput = Map::Input::NIL;
 };
 
 } // namespace Tetris

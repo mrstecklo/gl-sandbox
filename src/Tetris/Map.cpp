@@ -107,8 +107,7 @@ void Map::MoveFigure(Input in)
 
 bool Map::IsFigureValid()
 {
-    for(std::size_t i = 0; i < Figure::tetra; i++) {
-        const auto p = figure[i];
+    for(const auto&& p : figure) {
         if(IsPointOutside(p) || DoesPointCollide(p)) {
             return false;
         }
@@ -118,8 +117,7 @@ bool Map::IsFigureValid()
 
 bool Map::DoesFigureCollide()
 {
-    for(std::size_t i = 0; i < Figure::tetra; i++) {
-        const auto p = figure[i];
+    for(const auto&& p : figure) {
         if(DoesPointCollide(p)) {
             return true;
         }
@@ -139,15 +137,14 @@ bool Map::DoesPointCollide(const Util::Point& p)
     if(IsPointOutside(p)) {
         return false;
     } else {
-        return grid[p] != 0;
+        return grid.Check(p);
     }
 }
 
 void Map::ToInitState()
 {
-    for(std::size_t i = 0; i < Figure::tetra; i++) {
-        const auto p = figure[i];
-        grid[p] = 1;
+    for(const auto&& p : figure) {
+        grid.Set(p, true);
     }
     state = State::INIT;
 }
