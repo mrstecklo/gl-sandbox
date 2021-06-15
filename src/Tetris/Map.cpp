@@ -39,6 +39,15 @@ const Util::Point Figure::hotspot[NUM_TYPES][NUM_ROTATIONS] = {
     {{0, 0}, {0, 0}, {0, 1}, {-1, 0}}   // I
 };
 
+Map::Map(std::size_t width, std::size_t height) :
+    grid(width, height),
+    gen(std::random_device()())
+{
+    if(width > std::numeric_limits<int>::max() || height > std::numeric_limits<int>::max()) {
+        throw std::runtime_error("Map::Map. Dimensions are too big");
+    }
+}
+
 Figure Map::Spawn()
 {
     static std::uniform_int_distribution<> type_dist(0, Figure::NUM_TYPES - 1);
@@ -46,7 +55,7 @@ Figure Map::Spawn()
 
     const auto type = static_cast<Figure::Type>(type_dist(gen));
     const auto rotation = static_cast<Figure::Rotation>(rotation_dist(gen));
-    const Util::Point position {static_cast<int>(grid.width() / 2), 0};
+    const Util::Point position {static_cast<int>(grid.width() / 2), static_cast<int>(grid.height())};
 
     return Figure(position, type, rotation);
 }
@@ -59,12 +68,15 @@ void Map::Tick(Input in)
         std::cout << "init";
         figure = Spawn();
         state = DoesFigureCollide() ? State::END : State::FIGURE;
+        InitFigureImpl();
         break;
     case State::FIGURE:
         std::cout << "figure";
         MoveFigure(in);
         break;
-    default:
+    case State::CLEAN:
+        std::cout << "clean";
+        Clean();
     case State::END:
         std::cout << "end";
         break;
@@ -74,7 +86,7 @@ void Map::Tick(Input in)
 
 void Map::MoveFigure(Input in)
 {
-    const auto temp = figure;
+    const auto old = figure;
 
     switch(in) {
     case Input::NIL:
@@ -87,25 +99,32 @@ void Map::MoveFigure(Input in)
     case Input::LEFT:
         figure.MoveLeft();
         break;
-    case Input::ROTATE:
+    case Input::CLOCKWISE:
         figure.RotateClockwise();
+        break;
+    case Input::COUNTERCLOCK:
+        figure.RotateCounterClockwise();
         break;
     }
 
-    if(!IsFigureValid()) {
-        figure = temp;
+    if(IsFigureValid()) {
+        MoveFigureImpl(in, old);
+    } else {
+        figure = old;
         switch (in) {
         case Input::NIL:
         case Input::DOWN:
-            ToInitState();
+            Solidify();
+            state = State::CLEAN;
             break;
         default:
+            MoveRestictedImpl();
             break;
         }
     }
 }
 
-bool Map::IsFigureValid()
+bool Map::IsFigureValid() const
 {
     for(const auto&& p : figure) {
         if(IsPointOutside(p) || DoesPointCollide(p)) {
@@ -115,7 +134,7 @@ bool Map::IsFigureValid()
     return true;
 }
 
-bool Map::DoesFigureCollide()
+bool Map::DoesFigureCollide() const
 {
     for(const auto&& p : figure) {
         if(DoesPointCollide(p)) {
@@ -125,28 +144,68 @@ bool Map::DoesFigureCollide()
     return false;
 }
 
-bool Map::IsPointOutside(const Util::Point& p)
+bool Map::IsPointOutside(const Util::Point& p) const
 {
     return
         p.x < 0 || p.x >= static_cast<int>(grid.width()) ||
         p.y < 0 || p.y >= static_cast<int>(grid.height());
 }
 
-bool Map::DoesPointCollide(const Util::Point& p)
+bool Map::DoesPointCollide(const Util::Point& p) const
 {
     if(IsPointOutside(p)) {
         return false;
     } else {
-        return grid.Check(p);
+        return grid[p] != Cell::EMPTY;
     }
 }
 
-void Map::ToInitState()
+void Map::Solidify()
 {
     for(const auto&& p : figure) {
-        grid.Set(p, true);
+        grid[p] = Cell::SOLID;
     }
-    state = State::INIT;
+    SolidifyImpl();
+}
+
+void Map::Clean()
+{
+    int indexes[Figure::tetra] = {-1, -1, -1, -1};
+    static const auto alreadyChecked = [&indexes] (int idx) {
+        for(auto& i : indexes) {
+            if(i  < 0) {
+                i = idx;
+                return false;
+            } else if(i == idx) {
+                return true;
+            }
+        }
+        throw std::runtime_error("Map::Clean invalid index");
+    };
+
+    for(const auto&& p : figure) {
+        if(!alreadyChecked(p.y)) {
+            if(IsRowFilled(p.y)) {
+                CleanRow(p.y);
+            }
+        }
+    }
+}
+
+bool Map::IsRowFilled(std::size_t idx) const
+{
+    for(const auto c : grid[idx]) {
+        if(c == Cell::EMPTY) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Map::CleanRow(std::size_t idx) {
+    for(auto& c : grid[idx]) {
+        c = Cell::EMPTY;
+    }
 }
 
 } // namespace Tetris

@@ -77,8 +77,8 @@ public:
     constexpr void RotateClockwise()        { rot = static_cast<Rotation>((rot + 1) % NUM_ROTATIONS); }
     constexpr void RotateCounterClockwise() { rot = static_cast<Rotation>((rot + NUM_ROTATIONS - 1) % NUM_ROTATIONS); }
 
-    constexpr void MoveDown()  { pos.y += 1; }
-    constexpr void MoveUp()    { pos.y -= 1; }
+    constexpr void MoveDown()  { pos.y -= 1; }
+    constexpr void MoveUp()    { pos.y += 1; }
     constexpr void MoveRight() { pos.x += 1; }
     constexpr void MoveLeft()  { pos.x -= 1; }
 
@@ -98,46 +98,13 @@ private:
 
 constexpr Util::Point FigureConstIterator::operator*() { return (*parent)[idx]; }
 
-class Grid {
-public:
-
-    Grid(std::size_t width, std::size_t height) :
-        flags(width, height) {}
-
-    virtual ~Grid() = default;
-
-    void Set(const Util::Point& p, bool value)
-    {
-        flags[p] = value ? 1 : 0;
-        SetImpl(p, value);
-    }
-
-    bool Check(const Util::Point& p) const { return flags[p] != 0; }
-
-    std::size_t width() const { return flags.width(); }
-    std::size_t height() const { return flags.height(); }
-
-protected:
-    virtual void SetImpl(const Util::Point& p, bool value) {}
-
-private:
-    Util::Grid<int> flags;
-};
-
 class Map {
 public:
-    Map(Grid& g) :
-        grid(g),
-        gen(std::random_device()())
-    {
-        if(grid.width() > std::numeric_limits<int>::max() || grid.height() > std::numeric_limits<int>::max()) {
-            throw std::runtime_error("Map::Map. Dimensions are too big");
-        }
-    }
-
     enum class State {
         INIT,
         FIGURE,
+        CLEAN,
+        GRAVITY,
         END
     };
 
@@ -146,25 +113,51 @@ public:
         DOWN,
         RIGHT,
         LEFT,
-        ROTATE
+        CLOCKWISE,
+        COUNTERCLOCK
     };
-    
+
+    enum class Cell : int {
+        EMPTY,
+        SOLID
+    };
+
+    using Container = Util::Grid<Cell>;
+
+    Map(std::size_t width, std::size_t height);
+    virtual ~Map() = default;
+
     void Tick(Input in);
     State GetState() const { return state; }
+    bool Check(const Util::Point& p) const { return grid[p] != Cell::EMPTY; }
+
+protected:
+
+    virtual void InitFigureImpl() {}
+    virtual void SolidifyImpl() {}
+    virtual void MoveFigureImpl(Input /* in */, const Figure& /* old */) {}
+    virtual void MoveRestictedImpl() {}
+    virtual void CleanRowImpl(std::size_t idx) {};
 
     const Figure& GetFigure() const { return figure; }
 
+    bool IsFigureValid() const;
+    bool DoesFigureCollide() const;
+    bool IsPointOutside(const Util::Point& p) const;
+    bool DoesPointCollide(const Util::Point& p) const;
 
 private:
+
     Figure Spawn();
     void MoveFigure(Input in);
-    bool IsFigureValid();
-    bool DoesFigureCollide();
-    bool IsPointOutside(const Util::Point& p);
-    bool DoesPointCollide(const Util::Point& p);
-    void ToInitState();
+    
+    void Solidify();
+    void Clean();
+    void CleanRow(std::size_t idx);
 
-    Grid&           grid;
+    bool IsRowFilled(std::size_t idx) const;
+
+    Container       grid;
     std::mt19937    gen;
     State           state = State::INIT;
     Figure          figure{ {0,0}, Figure::Type::O };

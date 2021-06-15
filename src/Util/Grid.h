@@ -92,6 +92,7 @@ private:
     size_type xsize = 0;
 };
 
+
 template<class T>
 class Row {
 public:
@@ -112,6 +113,7 @@ public:
     constexpr pointer begin() const { return p; }
     constexpr pointer end()   const { return &p[s]; }
     
+    // TODO: these operators should be members of iterator, not row
     constexpr Row& operator++() { p += s; return *this; }
     constexpr Row& operator--() { p -= s; return *this; }
     constexpr Row  operator++(int) { auto old = *this; operator++(); return old; }
