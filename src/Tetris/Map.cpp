@@ -1,6 +1,7 @@
 #include "Map.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace Tetris {
 
@@ -77,6 +78,11 @@ void Map::Tick(Input in)
     case State::CLEAN:
         std::cout << "clean";
         Clean();
+        break;
+    case State::GRAVITY:
+        std::cout << "gravity";
+        Fall();
+        break;
     case State::END:
         std::cout << "end";
         break;
@@ -178,7 +184,7 @@ void Map::Clean()
                 return false;
             } else if(i == idx) {
                 return true;
-            }
+            } // else continue
         }
         throw std::runtime_error("Map::Clean invalid index");
     };
@@ -190,6 +196,7 @@ void Map::Clean()
             }
         }
     }
+    state = State::GRAVITY;
 }
 
 bool Map::IsRowFilled(std::size_t idx) const
@@ -205,6 +212,55 @@ bool Map::IsRowFilled(std::size_t idx) const
 void Map::CleanRow(std::size_t idx) {
     for(auto& c : grid[idx]) {
         c = Cell::EMPTY;
+    }
+    CleanRowImpl(idx);
+}
+
+void Map::Fall() {
+    for(std::size_t x = 0; x < grid.width(); ++x) {
+        auto gravityState = GravityState::SEEK_EMPTY;
+        std::size_t firstEmpty = 0;
+        std::size_t firstSolid = 0;
+        
+        std::size_t y = 0;
+        for(auto&& row : grid) {
+            switch (gravityState) {
+            case GravityState::SEEK_EMPTY:
+                if(row[x] == Cell::EMPTY) {
+                    FallCells(x, firstSolid, y - firstSolid, firstEmpty);
+                    firstEmpty = y;
+                    gravityState = GravityState::SEEK_SOLID;
+                }
+                break;
+            case GravityState::SEEK_SOLID:
+                if(row[x] != Cell::EMPTY) {
+                    firstSolid = y;
+                    gravityState = GravityState::SEEK_EMPTY;
+                }
+                break;
+            }
+            ++y;
+        }
+        FallCells(x, firstSolid, y - firstSolid, firstEmpty);
+    }
+    state = State::INIT;
+}
+
+void Map::FallCells(std::size_t column, std::size_t first, std::size_t height, std::size_t destination)
+{
+    if(first > destination) {
+        const auto last = first + height;
+        const auto lastDest = destination + height;
+
+        for(auto row = grid.begin() + destination; row < grid.begin() + std::min(first, lastDest); ++row) {
+            (*row)[column] = Cell::SOLID;
+        }
+
+        for(auto row = grid.begin() + std::max(first, lastDest); row < grid.begin() + last; ++row) {
+            (*row)[column] = Cell::EMPTY;
+        }
+
+        FallCellsImpl(column, first, height, destination);
     }
 }
 

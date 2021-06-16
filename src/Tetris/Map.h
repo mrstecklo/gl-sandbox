@@ -137,7 +137,8 @@ protected:
     virtual void SolidifyImpl() {}
     virtual void MoveFigureImpl(Input /* in */, const Figure& /* old */) {}
     virtual void MoveRestictedImpl() {}
-    virtual void CleanRowImpl(std::size_t idx) {};
+    virtual void CleanRowImpl(std::size_t /* idx */) {}
+    virtual void FallCellsImpl(std::size_t /* column */, std::size_t /* first */, std::size_t /* height */, std::size_t /* destination */) {}
 
     const Figure& GetFigure() const { return figure; }
 
@@ -154,6 +155,13 @@ private:
     void Solidify();
     void Clean();
     void CleanRow(std::size_t idx);
+    void Fall();
+    void FallCells(std::size_t column, std::size_t first, std::size_t height, std::size_t destination);
+
+    enum class GravityState {
+        SEEK_EMPTY,
+        SEEK_SOLID
+    };
 
     bool IsRowFilled(std::size_t idx) const;
 
