@@ -4,10 +4,9 @@
 
 namespace Tetris {
 
-constexpr std::chrono::microseconds Scene::tickDuration;
-
 Scene::Scene() :
-    map(width, height)
+    resources(),
+    map(width, height, std::chrono::milliseconds(500), resources)
 {
 }
 
@@ -51,11 +50,7 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
         return;
     }
 
-    counter += timeSinceLastFrame;
-    if(counter >= tickDuration) {
-        counter %= tickDuration;
-        map.Tick(Map::Input::NIL);
-    }
+    
 
     const auto microseconds = static_cast<float>(timeSinceLastFrame.count());
 
@@ -89,20 +84,26 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
     auto right = keyboardUnit * camera.GetRight();
     auto up = keyboardUnit * camera.GetUp();
 
+    Map::Input in = Map::Input::NIL;
+
     if(GetWindow()->GetKey(GLFW_KEY_UP) == GLFW::PRESS) {
         camera.Translate(forward);
+        in = Map::Input::CLOCKWISE;
     }
 
     if(GetWindow()->GetKey(GLFW_KEY_DOWN) == GLFW::PRESS) {
         camera.Translate(-forward);
+        in = Map::Input::DOWN;
     }
 
     if(GetWindow()->GetKey(GLFW_KEY_RIGHT) == GLFW::PRESS) {
         camera.Translate(right);
+        in = Map::Input::RIGHT;
     }
 
     if(GetWindow()->GetKey(GLFW_KEY_LEFT) == GLFW::PRESS) {
         camera.Translate(-right);
+        in = Map::Input::LEFT;
     }
 
     if(GetWindow()->GetKey(GLFW_KEY_KP_ADD) == GLFW::PRESS) {
@@ -113,6 +114,8 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
         camera.Translate(-up);
     }
 
+    map.Proceed(timeSinceLastFrame, in);
+
     lookingCube.LookAt(camera.GetPosition(), glm::vec3(0.f, 1.f, 0.f));
     FPLookingCube.FPLookAt(camera.GetPosition());
     
@@ -120,30 +123,7 @@ void Scene::ProcessInputImpl(const Util::PointD& cursor, std::chrono::microsecon
 
 void Scene::ForEachModelImpl(ModelCb cb) const
 {
-    auto& grid = map.GetGrid();
-
-    static glm::vec3 mapBase(0.f, 0.f, -10.f);
-    static float step = 2.5f;
-    
-    for(std::size_t j = 0; j < grid.height(); ++j) {
-        auto row = grid[j];
-        for(std::size_t i = 0; i < grid.width(); ++i) {
-            if(row[i] != 0) {
-                const auto pos = mapBase + glm::vec3(step * i, step * j, 0.f);
-                cube.SetPosition(pos);
-                cb(cube);
-            }
-        }
-    }
-
-    auto& figure = map.GetFigure();
-
-    for(std::size_t i = 0; i < Figure::tetra; ++i) {
-        const auto p = figure[i];
-        const auto pos = mapBase + glm::vec3(step * p.x, step * p.y, 0.f);
-        cube.SetPosition(pos);
-        cb(cube);
-    }
+    map.ForEachModel(cb);
 
     cb(scube);
     cb(triangle);

@@ -210,7 +210,7 @@ bool Map::IsRowFilled(std::size_t idx) const
 }
 
 void Map::CleanRow(std::size_t idx) {
-    for(auto& c : grid[idx]) {
+    for(auto&& c : grid[idx]) {
         c = Cell::EMPTY;
     }
     CleanRowImpl(idx);

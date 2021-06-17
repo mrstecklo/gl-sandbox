@@ -82,7 +82,7 @@ public:
     Row<T>      operator[](size_type i);
     ConstRow<T> operator[](size_type i) const;
 
-    Iterator      begin()       {return Iteraror(operator[](0)); }
+    Iterator      begin()       {return Iterator(operator[](0)); }
     ConstIterator begin() const {return ConstIterator(operator[](0)); }
 
     Iterator      end()       {return Iterator(operator[](xsize)); }
@@ -125,6 +125,14 @@ public:
     friend constexpr Row operator+(Row r, size_type i) { r += i; return r; }
     friend constexpr Row operator+(size_type i, const Row& r) { return r + i; } 
     friend constexpr Row operator-(Row r, size_type i) { r -= i; return r; }
+
+    friend constexpr bool operator<(const Row& r, const Row& l) { return r.data() < l.data(); }
+    friend constexpr bool operator>(const Row& r, const Row& l) { return l < r; }
+    friend constexpr bool operator<=(const Row& r, const Row& l) { return !(r > l); }
+    friend constexpr bool operator>=(const Row& r, const Row& l) { return !(r < l); }
+
+    friend constexpr bool operator==(const Row& r, const Row& l) { return r.data() == l.data(); }
+    friend constexpr bool operator!=(const Row& r, const Row& l) { return !(r == l); }
 
 private:
     pointer         p;

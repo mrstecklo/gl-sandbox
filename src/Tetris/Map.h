@@ -127,7 +127,6 @@ public:
     Map(std::size_t width, std::size_t height);
     virtual ~Map() = default;
 
-    void Tick(Input in);
     State GetState() const { return state; }
     bool Check(const Util::Point& p) const { return grid[p] != Cell::EMPTY; }
 
@@ -139,6 +138,8 @@ protected:
     virtual void MoveRestictedImpl() {}
     virtual void CleanRowImpl(std::size_t /* idx */) {}
     virtual void FallCellsImpl(std::size_t /* column */, std::size_t /* first */, std::size_t /* height */, std::size_t /* destination */) {}
+
+    void Tick(Input in);
 
     const Figure& GetFigure() const { return figure; }
 

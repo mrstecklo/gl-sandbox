@@ -1,7 +1,7 @@
 #include "GUI/Scene.h"
 #include "GLCPP/VertexArray.h"
 #include "ResourceManager.h"
-#include "Map.h"
+#include "Visualisation.h"
 
 namespace Tetris {
 
@@ -34,13 +34,12 @@ private:
     GUI::Model lookingCube;
     GUI::Model FPLookingCube;
 
-    Map        map;
+    Visualisation map;
 
     std::chrono::microseconds counter {0};
 
     static constexpr std::size_t width = 10;
     static constexpr std::size_t height = 20;
-    static constexpr std::chrono::microseconds tickDuration { 500000 };
 };
 
 } // namespace Tetris

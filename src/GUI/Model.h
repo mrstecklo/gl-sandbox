@@ -20,6 +20,8 @@ public:
     const GL::Texture2D*    GetTexture()        const { return tex.get(); }
     Program*                GetProgram()        const { return p.get(); }
 
+    bool Valid() const { return vertex && UV && tex && p; }
+
 private:
 
     Model(
