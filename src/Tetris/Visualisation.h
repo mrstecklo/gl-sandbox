@@ -31,7 +31,7 @@ private:
     void Set(const Util::Point& p, const GUI::Model& m);
     void Set(const Util::Point& p, GUI::Model&& m);
 
-    ResourceManager             resources;
+    ResourceManager&            resources;
     Util::Grid<GUI::Model>      models;
     std::chrono::microseconds   tickDur;
     std::chrono::microseconds   counter {0};

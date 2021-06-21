@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Defines.h"
+
 namespace Util {
 
 template<class T>
@@ -10,11 +12,11 @@ struct PointT {
     constexpr bool operator==(const PointT& r) const { return x == r.x && y == r.y; }
     constexpr bool operator!=(const PointT& r) const { return !(*this == r); }
 
-    constexpr PointT& operator+=(const PointT& r) { x += r.x; y += r.y; return *this; }
-    constexpr PointT& operator-=(const PointT& r) { x -= r.x; y -= r.y; return *this; }
+    CONSTEXPR14 PointT& operator+=(const PointT& r) { x += r.x; y += r.y; return *this; }
+    CONSTEXPR14 PointT& operator-=(const PointT& r) { x -= r.x; y -= r.y; return *this; }
 
-    friend constexpr const PointT operator+(PointT r, const PointT& l) { r += l; return r; }
-    friend constexpr const PointT operator-(PointT r, const PointT& l) { r -= l; return r; }
+    friend CONSTEXPR14 const PointT operator+(PointT r, const PointT& l) { r += l; return r; }
+    friend CONSTEXPR14 const PointT operator-(PointT r, const PointT& l) { r -= l; return r; }
 };
 
 using Point = PointT<int>;

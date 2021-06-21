@@ -6,7 +6,7 @@ namespace Tetris {
 
 Scene::Scene() :
     resources(),
-    map(width, height, std::chrono::milliseconds(500), resources)
+    map(mapWidth, mapHeight, std::chrono::milliseconds(500), resources)
 {
 }
 

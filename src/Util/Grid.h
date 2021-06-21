@@ -49,7 +49,11 @@ public:
     {}
 
     Grid(size_type width, size_type height, const Allocator& alloc = Allocator()) :
+#ifdef C14_VECTOR
         Base(width * height, alloc),
+#else
+        Base(width * height, T(), alloc),
+#endif
         xsize(width)
     {}
 
@@ -114,17 +118,17 @@ public:
     constexpr pointer end()   const { return &p[s]; }
     
     // TODO: these operators should be members of iterator, not row
-    constexpr Row& operator++() { p += s; return *this; }
-    constexpr Row& operator--() { p -= s; return *this; }
-    constexpr Row  operator++(int) { auto old = *this; operator++(); return old; }
-    constexpr Row  operator--(int) { auto old = *this; operator--(); return old; }
+    CONSTEXPR14 Row& operator++() { p += s; return *this; }
+    CONSTEXPR14 Row& operator--() { p -= s; return *this; }
+    CONSTEXPR14 Row  operator++(int) { auto old = *this; operator++(); return old; }
+    CONSTEXPR14 Row  operator--(int) { auto old = *this; operator--(); return old; }
 
-    constexpr Row& operator+=(size_type i) { p += i * s; return *this; }
-    constexpr Row& operator-=(size_type i) { p -= i * s; return *this; }
+    CONSTEXPR14 Row& operator+=(size_type i) { p += i * s; return *this; }
+    CONSTEXPR14 Row& operator-=(size_type i) { p -= i * s; return *this; }
 
-    friend constexpr Row operator+(Row r, size_type i) { r += i; return r; }
-    friend constexpr Row operator+(size_type i, const Row& r) { return r + i; } 
-    friend constexpr Row operator-(Row r, size_type i) { r -= i; return r; }
+    friend CONSTEXPR14 Row operator+(Row r, size_type i) { r += i; return r; }
+    friend CONSTEXPR14 Row operator+(size_type i, const Row& r) { return r + i; } 
+    friend CONSTEXPR14 Row operator-(Row r, size_type i) { r -= i; return r; }
 
     friend constexpr bool operator<(const Row& r, const Row& l) { return r.data() < l.data(); }
     friend constexpr bool operator>(const Row& r, const Row& l) { return l < r; }
@@ -163,17 +167,17 @@ public:
     constexpr const_pointer begin() const { return Base::begin(); }
     constexpr const_pointer end()   const { return Base::end(); }
     
-    constexpr ConstRow& operator++() { Base::operator++(); return *this; }
-    constexpr ConstRow& operator--() { Base::operator--(); return *this; }
-    constexpr ConstRow  operator++(int) { return Base::operator++(0); }
-    constexpr ConstRow  operator--(int) { return Base::operator--(0); }
+    CONSTEXPR14 ConstRow& operator++() { Base::operator++(); return *this; }
+    CONSTEXPR14 ConstRow& operator--() { Base::operator--(); return *this; }
+    CONSTEXPR14 ConstRow  operator++(int) { return Base::operator++(0); }
+    CONSTEXPR14 ConstRow  operator--(int) { return Base::operator--(0); }
 
-    constexpr ConstRow& operator+=(size_type i) { Base::operator+=(i); return *this; }
-    constexpr ConstRow& operator-=(size_type i) { Base::operator-=(i); return *this; }
+    CONSTEXPR14 ConstRow& operator+=(size_type i) { Base::operator+=(i); return *this; }
+    CONSTEXPR14 ConstRow& operator-=(size_type i) { Base::operator-=(i); return *this; }
 
-    friend constexpr ConstRow operator+(ConstRow r, size_type i) { r += i; return r; }
-    friend constexpr ConstRow operator+(size_type i, const ConstRow& r) { return r + i; } 
-    friend constexpr ConstRow operator-(ConstRow r, size_type i) { r -= i; return r; }
+    friend CONSTEXPR14 ConstRow operator+(ConstRow r, size_type i) { r += i; return r; }
+    friend CONSTEXPR14 ConstRow operator+(size_type i, const ConstRow& r) { return r + i; } 
+    friend CONSTEXPR14 ConstRow operator-(ConstRow r, size_type i) { r -= i; return r; }
 
     friend constexpr bool operator<(const ConstRow& r, const ConstRow& l) { return r.data() < l.data(); }
     friend constexpr bool operator>(const ConstRow& r, const ConstRow& l) { return l < r; }
@@ -206,17 +210,17 @@ public:
 
     constexpr const RowType& operator*() const { return impl; }
 
-    constexpr GridIteratorBase& operator++() { ++impl; return *this; }
-    constexpr GridIteratorBase& operator--() { --impl; return *this; }
-    constexpr GridIteratorBase  operator++(int) { return GridIterarorBase(impl++); }
-    constexpr GridIteratorBase  operator--(int) { return GridIterarorBase(impl--); }
+    CONSTEXPR14 GridIteratorBase& operator++() { ++impl; return *this; }
+    CONSTEXPR14 GridIteratorBase& operator--() { --impl; return *this; }
+    CONSTEXPR14 GridIteratorBase  operator++(int) { return GridIterarorBase(impl++); }
+    CONSTEXPR14 GridIteratorBase  operator--(int) { return GridIterarorBase(impl--); }
 
-    constexpr GridIteratorBase& operator+=(size_type i) { impl += i; return *this; }
-    constexpr GridIteratorBase& operator-=(size_type i) { impl -= i; return *this; }
+    CONSTEXPR14 GridIteratorBase& operator+=(size_type i) { impl += i; return *this; }
+    CONSTEXPR14 GridIteratorBase& operator-=(size_type i) { impl -= i; return *this; }
 
-    friend constexpr GridIteratorBase operator+(GridIteratorBase r, size_type i) { r += i; return r; }
-    friend constexpr GridIteratorBase operator+(size_type i, const GridIteratorBase& r) { return r + i; } 
-    friend constexpr GridIteratorBase operator-(GridIteratorBase r, size_type i) { r -= i; return r; }
+    friend CONSTEXPR14 GridIteratorBase operator+(GridIteratorBase r, size_type i) { r += i; return r; }
+    friend CONSTEXPR14 GridIteratorBase operator+(size_type i, const GridIteratorBase& r) { return r + i; } 
+    friend CONSTEXPR14 GridIteratorBase operator-(GridIteratorBase r, size_type i) { r -= i; return r; }
 
     friend constexpr bool operator<(const GridIteratorBase& r, const GridIteratorBase& l) { return r.impl < l.impl; }
     friend constexpr bool operator>(const GridIteratorBase& r, const GridIteratorBase& l) { return l < r; }

@@ -38,8 +38,8 @@ private:
 
     std::chrono::microseconds counter {0};
 
-    static constexpr std::size_t width = 10;
-    static constexpr std::size_t height = 20;
+    static constexpr std::size_t mapWidth = 10;
+    static constexpr std::size_t mapHeight = 20;
 };
 
 } // namespace Tetris

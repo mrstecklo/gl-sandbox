@@ -16,19 +16,19 @@ public:
         idx(index)
     {}
 
-    constexpr Util::Point operator*();
+    CONSTEXPR14 Util::Point operator*();
 
-    constexpr FigureConstIterator& operator++() { ++idx; return *this; }
-    constexpr FigureConstIterator& operator--() { --idx; return *this; }
-    constexpr FigureConstIterator  operator++(int) { auto old = *this; operator++(); return old; }
-    constexpr FigureConstIterator  operator--(int) { auto old = *this; operator--(); return old; }
+    CONSTEXPR14 FigureConstIterator& operator++() { ++idx; return *this; }
+    CONSTEXPR14 FigureConstIterator& operator--() { --idx; return *this; }
+    CONSTEXPR14 FigureConstIterator  operator++(int) { auto old = *this; operator++(); return old; }
+    CONSTEXPR14 FigureConstIterator  operator--(int) { auto old = *this; operator--(); return old; }
 
-    constexpr FigureConstIterator& operator+=(std::size_t i) { idx += i; return *this; }
-    constexpr FigureConstIterator& operator-=(std::size_t i) { idx -= i; return *this; }
+    CONSTEXPR14 FigureConstIterator& operator+=(std::size_t i) { idx += i; return *this; }
+    CONSTEXPR14 FigureConstIterator& operator-=(std::size_t i) { idx -= i; return *this; }
 
-    friend constexpr FigureConstIterator operator+(FigureConstIterator r, std::size_t i) { r += i; return r; }
-    friend constexpr FigureConstIterator operator+(std::size_t i, const FigureConstIterator& r) { return r + i; } 
-    friend constexpr FigureConstIterator operator-(FigureConstIterator r, std::size_t i) { r -= i; return r; }
+    friend CONSTEXPR14 FigureConstIterator operator+(FigureConstIterator r, std::size_t i) { r += i; return r; }
+    friend CONSTEXPR14 FigureConstIterator operator+(std::size_t i, const FigureConstIterator& r) { return r + i; } 
+    friend CONSTEXPR14 FigureConstIterator operator-(FigureConstIterator r, std::size_t i) { r -= i; return r; }
 
     friend constexpr bool operator<(const FigureConstIterator& r, const FigureConstIterator& l) { return r.idx < l.idx; }
     friend constexpr bool operator>(const FigureConstIterator& r, const FigureConstIterator& l) { return l < r; }
@@ -74,15 +74,15 @@ public:
         pos(p), type(t), rot(r) {}
 
 
-    constexpr void RotateClockwise()        { rot = static_cast<Rotation>((rot + 1) % NUM_ROTATIONS); }
-    constexpr void RotateCounterClockwise() { rot = static_cast<Rotation>((rot + NUM_ROTATIONS - 1) % NUM_ROTATIONS); }
+    CONSTEXPR14 void RotateClockwise()        { rot = static_cast<Rotation>((rot + 1) % NUM_ROTATIONS); }
+    CONSTEXPR14 void RotateCounterClockwise() { rot = static_cast<Rotation>((rot + NUM_ROTATIONS - 1) % NUM_ROTATIONS); }
 
-    constexpr void MoveDown()  { pos.y -= 1; }
-    constexpr void MoveUp()    { pos.y += 1; }
-    constexpr void MoveRight() { pos.x += 1; }
-    constexpr void MoveLeft()  { pos.x -= 1; }
+    CONSTEXPR14 void MoveDown()  { pos.y -= 1; }
+    CONSTEXPR14 void MoveUp()    { pos.y += 1; }
+    CONSTEXPR14 void MoveRight() { pos.x += 1; }
+    CONSTEXPR14 void MoveLeft()  { pos.x -= 1; }
 
-    constexpr Util::Point operator[](std::size_t i) const { return pos + offset[type][i] + hotspot[type][rot]; }
+    CONSTEXPR14 Util::Point operator[](std::size_t i) const { return pos + offset[type][i] + hotspot[type][rot]; }
     
     constexpr ConstIterator begin() const { return ConstIterator(this, 0); }
     constexpr ConstIterator end()   const { return ConstIterator(this, tetra); }
@@ -96,7 +96,9 @@ private:
     static const Util::Point hotspot[NUM_TYPES][NUM_ROTATIONS];
 };
 
-constexpr Util::Point FigureConstIterator::operator*() { return (*parent)[idx]; }
+#ifdef FULL_CONSTEXPR
+CONSTEXPR14 Util::Point FigureConstIterator::operator*() { return (*parent)[idx]; }
+#endif
 
 class Map {
 public:
@@ -144,6 +146,7 @@ protected:
     const Figure& GetFigure() const { return figure; }
 
     bool IsFigureValid() const;
+    bool IsFigureOutside() const;
     bool DoesFigureCollide() const;
     bool IsPointOutside(const Util::Point& p) const;
     bool DoesPointCollide(const Util::Point& p) const;

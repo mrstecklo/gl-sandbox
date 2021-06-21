@@ -5,6 +5,10 @@
 
 namespace Tetris {
 
+#ifndef FULL_CONSTEXPR
+CONSTEXPR14 Util::Point FigureConstIterator::operator*() { return (*parent)[idx]; }
+#endif
+
 static_assert(
     Figure::O == 0 &&
     Figure::T == 1 &&
@@ -44,7 +48,7 @@ Map::Map(std::size_t width, std::size_t height) :
     grid(width, height),
     gen(std::random_device()())
 {
-    if(width > std::numeric_limits<int>::max() || height > std::numeric_limits<int>::max()) {
+    if(width > static_cast<std::size_t>(std::numeric_limits<int>::max()) || height > static_cast<std::size_t>(std::numeric_limits<int>::max())) {
         throw std::runtime_error("Map::Map. Dimensions are too big");
     }
 }
@@ -68,6 +72,9 @@ void Map::Tick(Input in)
     case State::INIT:
         std::cout << "init";
         figure = Spawn();
+        while(IsFigureOutside()) {
+            figure.MoveDown();
+        }
         state = DoesFigureCollide() ? State::END : State::FIGURE;
         InitFigureImpl();
         break;
@@ -144,6 +151,16 @@ bool Map::DoesFigureCollide() const
 {
     for(const auto&& p : figure) {
         if(DoesPointCollide(p)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Map::IsFigureOutside() const
+{
+    for(const auto&& p : figure) {
+        if(IsPointOutside(p)) {
             return true;
         }
     }

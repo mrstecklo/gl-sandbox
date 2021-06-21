@@ -63,7 +63,7 @@ void Visualisation::SolidifyImpl()
     }
 }
 
-void Visualisation::MoveFigureImpl(Input in, const Figure& old)
+void Visualisation::MoveFigureImpl(Input /* in */, const Figure& old)
 {
     for(std::size_t i = 0; i < Figure::tetra; ++i) {
         Set(GetFigure()[i], std::move(models[old[i]]));
