@@ -82,9 +82,15 @@ void Visualisation::SolidifyImpl()
 
 void Visualisation::MoveFigureImpl(Input /* in */, const Figure& old)
 {
+    // TODO: you need at most one temp model, not four
+    GUI::Model temp[Figure::tetra];
     for(std::size_t i = 0; i < Figure::tetra; ++i) {
-        Set(GetFigure()[i], std::move(models[old[i]]));
+        temp[i] = std::move(models[old[i]]);
     }
+
+    for(std::size_t i = 0; i < Figure::tetra; ++i) {
+        Set(GetFigure()[i], std::move(temp[i]));
+    }  
 }
 
 void Visualisation::MoveRestictedImpl()
