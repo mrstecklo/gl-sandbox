@@ -121,7 +121,8 @@ public:
 
     enum class Cell : int {
         EMPTY,
-        SOLID
+        SOLID,
+        DISAPPEARING
     };
 
     using Container = Util::Grid<Cell>;
@@ -139,7 +140,7 @@ protected:
     virtual void MoveFigureImpl(Input /* in */, const Figure& /* old */) {}
     virtual void MoveRestictedImpl() {}
     virtual void CleanRowImpl(std::size_t /* idx */) {}
-    virtual void FallCellsImpl(std::size_t /* column */, std::size_t /* first */, std::size_t /* height */, std::size_t /* destination */) {}
+    virtual void FallCellsImpl(std::size_t /* first */, std::size_t /* height */, std::size_t /* destination */) {}
 
     void Tick(Input in);
 
@@ -160,11 +161,11 @@ private:
     void Clean();
     void CleanRow(std::size_t idx);
     void Fall();
-    void FallCells(std::size_t column, std::size_t first, std::size_t height, std::size_t destination);
+    void FallCells(std::size_t first, std::size_t height, std::size_t destination);
 
     enum class GravityState {
-        SEEK_EMPTY,
-        SEEK_SOLID
+        SEEK_DISAPPEARING,
+        SEEK_UNCHANGED
     };
 
     bool IsRowFilled(std::size_t idx) const;

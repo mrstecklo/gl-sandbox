@@ -62,6 +62,8 @@ Figure Map::Spawn()
     const auto rotation = static_cast<Figure::Rotation>(rotation_dist(gen));
     const Util::Point position {static_cast<int>(grid.width() / 2), static_cast<int>(grid.height())};
 
+    std::cout << '\n' << "Map::Spawn " << type << ", " << rotation << ", " <<  position;
+
     return Figure(position, type, rotation);
 }
 
@@ -80,6 +82,7 @@ void Map::Tick(Input in)
         break;
     case State::FIGURE:
         std::cout << "figure";
+        std::cout << " " << figure[0];
         MoveFigure(in);
         break;
     case State::CLEAN:
@@ -227,57 +230,47 @@ bool Map::IsRowFilled(std::size_t idx) const
 }
 
 void Map::CleanRow(std::size_t idx) {
-    for(auto&& c : grid[idx]) {
-        c = Cell::EMPTY;
-    }
+    grid[idx][0] = Cell::DISAPPEARING;
     CleanRowImpl(idx);
 }
 
 void Map::Fall() {
-    for(std::size_t x = 0; x < grid.width(); ++x) {
-        auto gravityState = GravityState::SEEK_EMPTY;
-        std::size_t firstEmpty = 0;
-        std::size_t firstSolid = 0;
-        
-        std::size_t y = 0;
-        for(auto&& row : grid) {
-            switch (gravityState) {
-            case GravityState::SEEK_EMPTY:
-                if(row[x] == Cell::EMPTY) {
-                    FallCells(x, firstSolid, y - firstSolid, firstEmpty);
-                    firstEmpty = y;
-                    gravityState = GravityState::SEEK_SOLID;
-                }
-                break;
-            case GravityState::SEEK_SOLID:
-                if(row[x] != Cell::EMPTY) {
-                    firstSolid = y;
-                    gravityState = GravityState::SEEK_EMPTY;
-                }
-                break;
+    auto gravityState = GravityState::SEEK_DISAPPEARING;
+    std::size_t firstDisappearing = 0;
+    std::size_t firstUnchanged = 0;
+    
+    for(std::size_t y = 0; y < grid.height(); ++y) {
+        switch (gravityState) {
+        case GravityState::SEEK_DISAPPEARING:
+            if(grid[y][0] == Cell::DISAPPEARING) {
+                FallCells(firstUnchanged, y - firstUnchanged, firstDisappearing);
+                firstDisappearing = y;
+                gravityState = GravityState::SEEK_UNCHANGED;
             }
-            ++y;
+            break;
+        case GravityState::SEEK_UNCHANGED:
+            if(grid[y][0] != Cell::DISAPPEARING) {
+                firstUnchanged = y;
+                gravityState = GravityState::SEEK_DISAPPEARING;
+            }
+            break;
         }
-        FallCells(x, firstSolid, y - firstSolid, firstEmpty);
     }
+    FallCells(firstUnchanged, grid.height() - firstUnchanged, firstDisappearing);
     state = State::INIT;
 }
 
-void Map::FallCells(std::size_t column, std::size_t first, std::size_t height, std::size_t destination)
+void Map::FallCells(std::size_t first, std::size_t height, std::size_t destination)
 {
     if(first > destination) {
-        const auto last = first + height;
-        const auto lastDest = destination + height;
-
-        for(auto row = grid.begin() + destination; row < grid.begin() + std::min(first, lastDest); ++row) {
-            (*row)[column] = Cell::SOLID;
+        for(auto src = grid.begin() + first, dst = grid.begin() + destination; src < grid.begin() + first + height; ++src, ++dst) {
+            std::memcpy(dst->data(), src->data(), grid.width() * sizeof(Cell));
+            std::memset(dst->data(), 0, grid.width() * sizeof(Cell));
+            static_assert(Cell::EMPTY == static_cast<Cell>(0), "memset '0' implies Cell::EMPTY is zero");
+            static_assert(std::is_same<decltype(grid)::value_type, Cell>::value, "Grid here is not made of cells");
         }
 
-        for(auto row = grid.begin() + std::max(first, lastDest); row < grid.begin() + last; ++row) {
-            (*row)[column] = Cell::EMPTY;
-        }
-
-        FallCellsImpl(column, first, height, destination);
+        FallCellsImpl(first, height, destination);
     }
 }
 

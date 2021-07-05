@@ -1,9 +1,9 @@
 #include "Visualisation.h"
-
+#include <iostream>
 
 namespace Tetris {
 
-glm::vec3 Visualisation::mapBase(0.f, 0.f, -10.f);
+glm::vec3 Visualisation::mapBase(0.f, -5.f, -10.f);
 float Visualisation::step = 2.5f;
 
 Visualisation::Visualisation(std::size_t width, std::size_t height, std::chrono::microseconds tickDuration, ResourceManager& res) :
@@ -13,24 +13,38 @@ Visualisation::Visualisation(std::size_t width, std::size_t height, std::chrono:
     tickDur(tickDuration)
 {}
 
+static bool print = false;
+
 void Visualisation::Proceed(std::chrono::microseconds delta, Map::Input in)
 {
     counter += delta;
     if(counter >= tickDur || in != Map::Input::NIL) {
         Tick(in);
+        print = true;
     }
     counter %= tickDur;
 }
 
 void Visualisation::ForEachModel(std::function<void(const GUI::Model&)> cb) const
 {
+    if(print) std::cout << "Visualisation::ForEachModel";
+    std::size_t y = 0;
     for(auto&& row : models) {
+        if(print) std::cout << "\n[" << y << "]:";
+        std::size_t x = 0;
         for(auto&& model : row) {
             if(model.Valid()) {
                 cb(model);
+                if(print) std::cout << "1,";
+            } else {
+                if(print) std::cout << "0,";
             }
+            ++x;
         }
+        if(print) std::cout << ":(" << x << ")"; 
+        ++y;
     }
+    print = false;
 }
 
 void Visualisation::Set(const Util::Point& p, const GUI::Model& m)
@@ -50,9 +64,12 @@ void Visualisation::Set(const Util::Point& p, GUI::Model&& m)
 void Visualisation::InitFigureImpl()
 {
     const auto cube = resources.CreateModel(Resource::V_CUBE, Resource::T_AXIS, Resource::P_GENERIC);
+    std::cout << "Visualisation::InitFigureImpl";
     for(auto&& p : GetFigure()) {
+        std::cout << ' ' << p;
         Set(p, cube);
     }
+    std::cout << '\n';
 }
 
 void Visualisation::SolidifyImpl()
@@ -82,12 +99,13 @@ void Visualisation::CleanRowImpl(std::size_t idx)
     }
 }
 
-void Visualisation::FallCellsImpl(std::size_t column, std::size_t first, std::size_t height, std::size_t destination)
+void Visualisation::FallCellsImpl(std::size_t first, std::size_t height, std::size_t destination)
 {
-    const auto last = first + height;
-
-    for(auto src = models.begin() + first; src < models.begin() + last; ++src, ++destination) {
-        Set({static_cast<int>(column), static_cast<int>(destination)}, std::move((*src)[column]));
+    for(auto src = models.begin() + first; src < models.begin() + first + height; ++src, ++destination) {
+        for(std::size_t x = 0; x < models.width(); ++x) {
+            const Util::Point p {static_cast<int>(x), static_cast<int>(destination)};
+            Set(p, std::move((*src)[x]));
+        }
     }
 }
 

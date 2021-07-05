@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Defines.h"
+#include <iosfwd>
 
 namespace Util {
 
@@ -17,6 +18,12 @@ struct PointT {
 
     friend CONSTEXPR14 const PointT operator+(PointT r, const PointT& l) { r += l; return r; }
     friend CONSTEXPR14 const PointT operator-(PointT r, const PointT& l) { r -= l; return r; }
+
+    friend std::ostream& operator<<(std::ostream& os, const PointT& obj)
+    {
+        os << '{' << obj.x << ", " << obj.y << '}';
+        return os;
+    }
 };
 
 using Point = PointT<int>;

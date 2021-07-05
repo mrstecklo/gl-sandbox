@@ -23,11 +23,11 @@ protected:
     void MoveFigureImpl(Input in, const Figure& old) override;
     void MoveRestictedImpl() override;
     void CleanRowImpl(std::size_t idx) override;
-    void FallCellsImpl(std::size_t column, std::size_t first, std::size_t height, std::size_t destination) override;
+    void FallCellsImpl(std::size_t first, std::size_t height, std::size_t destination) override;
 
 private:
 
-    static glm::vec3 Position(const Util::Point& p) { return mapBase + glm::vec3(p.x * step, p.y * step, -5.f); }
+    static glm::vec3 Position(const Util::Point& p) { return mapBase + glm::vec3(p.x * step, p.y * step, 0.f); }
     void Set(const Util::Point& p, const GUI::Model& m);
     void Set(const Util::Point& p, GUI::Model&& m);
 

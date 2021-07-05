@@ -89,8 +89,8 @@ public:
     Iterator      begin()       {return Iterator(operator[](0)); }
     ConstIterator begin() const {return ConstIterator(operator[](0)); }
 
-    Iterator      end()       {return Iterator(operator[](xsize)); }
-    ConstIterator end() const {return ConstIterator(operator[](xsize)); }
+    Iterator      end()       {return Iterator(operator[](height())); }
+    ConstIterator end() const {return ConstIterator(operator[](height())); }
  
 private:
     size_type xsize = 0;
@@ -209,6 +209,7 @@ public:
     {}
 
     constexpr const RowType& operator*() const { return impl; }
+    constexpr const RowType* operator->() const { return &impl; }
 
     CONSTEXPR14 GridIteratorBase& operator++() { ++impl; return *this; }
     CONSTEXPR14 GridIteratorBase& operator--() { --impl; return *this; }
