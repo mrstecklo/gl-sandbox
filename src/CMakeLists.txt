@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(GLEW_INCLUDE_DIR CACHE PATH "Path to the GL/glew.h")
-set(GLFW_INCLUDE_DIR CACHE PATH "Path to the GLFW/glfw3.h")
 set(GLM_INCLUDE_DIR CACHE PATH "Path to the glm/glm.hpp")
 
 set(GLEW_LIB_DIR CACHE PATH "Path to the glew32s.lib")
-set(GLFW_LIB_DIR CACHE PATH "Path to the glfw3.lib")
 
 add_executable(GLApp
    main.cpp
@@ -32,7 +30,6 @@ target_include_directories(GLApp PUBLIC
 
 target_include_directories(GLApp SYSTEM PUBLIC
    ${GLEW_INCLUDE_DIR}
-   ${GLFW_INCLUDE_DIR}
    ${GLM_INCLUDE_DIR}
 )
 
@@ -60,12 +57,6 @@ add_definitions(
    -DGLEW_STATIC
 )
 
-find_library(GLFW3_LIB
-   NAMES glfw3 glfw
-   HINTS
-      ${GLFW_LIB_DIR}
-)
-
 find_library(GLEW_LIB
    NAMES glew32s GLEW
    HINTS
@@ -84,6 +75,6 @@ endif()
 
 target_link_libraries(GLApp  
    ${OPENGL_LIB}
-   ${GLFW3_LIB}
+   glfw
    ${GLEW_LIB}
 )
