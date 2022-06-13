@@ -27,10 +27,12 @@ function(add_external_library NAME)
 endfunction()
 
 if(MSVC)
-    set(GLFW_LIB ${CMAKE_STATIC_LIBRARY_PREFIX}glfw3${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(GLFW_LIB_NAME glfw3)
 else()
-    set(GLFW_LIB ${CMAKE_STATIC_LIBRARY_PREFIX}glfw${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(GLFW_LIB_NAME glfw)
 endif()
+
+set(GLFW_LIB ${CMAKE_STATIC_LIBRARY_PREFIX}${GLFW_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 add_external_library(glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
