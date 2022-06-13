@@ -283,6 +283,7 @@ static const ExtentionLoad loaders[] =
 
 GL::Texture2D Load(const std::string& s, uint32_t* mipmapCount, bool* invertV)
 {
+    auto path = "resources/" + s;
     auto idx = s.find_last_of('.');
     if(idx != std::string::npos) {
         auto ext = s.substr(idx + 1);
@@ -292,7 +293,7 @@ GL::Texture2D Load(const std::string& s, uint32_t* mipmapCount, bool* invertV)
 
         for(auto& l : loaders) {
             if(ext.compare(l.extention) == 0) {
-                return l.func(s, mipmapCount, invertV);
+                return l.func(path, mipmapCount, invertV);
             }
         }
     }
@@ -301,7 +302,7 @@ GL::Texture2D Load(const std::string& s, uint32_t* mipmapCount, bool* invertV)
 
     for(auto& l : loaders) {
         try {
-            return l.func(s, mipmapCount, invertV);
+            return l.func(path, mipmapCount, invertV);
         } catch (const std::exception& e) {
             ss << std::endl << e.what();
         }
