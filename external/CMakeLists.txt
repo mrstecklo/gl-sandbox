@@ -26,6 +26,28 @@ function(add_external_library NAME)
     target_include_directories(${NAME} INTERFACE ${INSTALL_DIR}/include)
 endfunction()
 
+function(add_binary_library NAME)
+    cmake_parse_arguments(EXTERNAL "" "" "LIBRARIES" ${ARGN})
+
+    set(INTERNAL_TARGET ${NAME}.internal)
+    ExternalProject_Add(${INTERNAL_TARGET}
+        ${EXTERNAL_UNPARSED_ARGUMENTS}
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+    )
+    ExternalProject_Get_property(${INTERNAL_TARGET} SOURCE_DIR)
+
+    add_library(${NAME} INTERFACE)
+    add_dependencies(${NAME} ${INTERNAL_TARGET})
+
+    foreach(LIBRARY ${EXTERNAL_LIBRARIES})
+        target_link_libraries(${NAME} INTERFACE ${SOURCE_DIR}/${LIBRARY})
+    endforeach()
+
+    target_include_directories(${NAME} INTERFACE ${SOURCE_DIR}/include)
+endfunction()
+
 if(MSVC)
     set(GLFW_LIB_NAME glfw3)
 else()
@@ -39,3 +61,12 @@ add_external_library(glfw
     GIT_TAG latest
     LIBRARIES lib/${GLFW_LIB}
 )
+
+if(MSVC)
+    add_binary_library(glew
+        URL https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip
+        URL_MD5 1feddfe8696c192fa46a0df8eac7d4bf
+        LIBRARIES lib/Release/x64/glew32s.lib
+    )
+    target_compile_definitions(glew INTERFACE -DGLEW_STATIC)
+endif()
